@@ -131,3 +131,93 @@ export {
 export type {XLoadingModalProps, XLoadingModalConfig, XImagePreviewParams, XToastOptions, XToastType, XToastPosition} from './XProviders';
 
 export {xTheme} from './theme';
+export {lightTokens, darkTokens, setXThemeMode, getXThemeMode, useXThemeMode, useXTheme, useXThemeScheme} from './theme';
+export type {XTheme, XThemeMode, XThemeScheme} from './theme';
+
+// ---------------------------------------------------------------------------
+// 国际化（中英）
+// ---------------------------------------------------------------------------
+export {useXLocale, setXLocale, getXLocale, xT, xMonthTitle, X_WEEKDAYS} from './XLocale';
+export type {XLocale, XLocaleKey} from './XLocale';
+
+// ---------------------------------------------------------------------------
+// 轮播图 / 选项卡 / 电梯楼层
+// ---------------------------------------------------------------------------
+export {XCarousel} from './XCarousel';
+export type {XCarouselProps, XCarouselItem} from './XCarousel';
+
+export {XTabs, XTabPane} from './XTabs';
+export type {XTabsProps, XTabPaneProps} from './XTabs';
+
+export {XElevator} from './XElevator';
+export type {XElevatorProps, XElevatorSection} from './XElevator';
+
+// ---------------------------------------------------------------------------
+// 下拉菜单
+// ---------------------------------------------------------------------------
+export {default as XDropdownMenu, XDropdownMenuItem} from './XDropdownMenu';
+export type {XDropdownMenuProps, XDropdownMenuItemProps, XMenuOption} from './XDropdownMenu';
+
+// ---------------------------------------------------------------------------
+// 日历 / 弹窗日历
+// ---------------------------------------------------------------------------
+export {XCalendar} from './XCalendar';
+export type {XCalendarProps, XCalendarMode, XCalendarValue} from './XCalendar';
+export {XCalendarPopup} from './XCalendar/XCalendarPopup';
+export type {XCalendarPopupProps} from './XCalendar/XCalendarPopup';
+
+// ---------------------------------------------------------------------------
+// 录音
+// ---------------------------------------------------------------------------
+export {XRecord} from './XRecord';
+export type {XRecordProps, XRecordValue} from './XRecord';
+
+// ---------------------------------------------------------------------------
+// 数字键盘（含弹出模式）
+// ---------------------------------------------------------------------------
+export {XNumberKeyboard, XNumberKeyboardPopup} from './XNumberKeyboard';
+export type {XNumberKeyboardProps, XNumberKeyboardPopupProps} from './XNumberKeyboard';
+
+// ---------------------------------------------------------------------------
+// 车牌号输入
+// ---------------------------------------------------------------------------
+export {default as XLicensePlate, XLicensePlateKeyboard} from './XLicensePlate';
+export type {XLicensePlateProps, XLicensePlateKeyboardProps, XLicensePlatePhase} from './XLicensePlate';
+
+// ---------------------------------------------------------------------------
+// 图表（SVG 轻量三件套）
+// ---------------------------------------------------------------------------
+export {XLineChart, XBarChart, XPieChart} from './XChart';
+export type {XLineChartProps, XBarChartProps, XBarChartItem, XPieChartProps, XPieChartItem} from './XChart';
+
+// ---------------------------------------------------------------------------
+// 签名（普通 + Skia 逐字）
+// ---------------------------------------------------------------------------
+export {XSignature} from './XSignature';
+export type {XSignatureProps} from './XSignature';
+export {XSignatureSkia} from './XSignature/XSignatureSkia';
+export type {
+  XSignatureSkiaProps,
+  XSignatureSkiaValue,
+  XSignatureCharacter,
+  XSignatureStroke,
+} from './XSignature/XSignatureSkia';
+
+// ---------------------------------------------------------------------------
+// 上传（适配器模式：普通 multipart + MinIO 预签名直传）
+// ---------------------------------------------------------------------------
+export * from './XUpload';
+
+// ---------------------------------------------------------------------------
+// 主题色 + 全局主题控件
+// ---------------------------------------------------------------------------
+export {ThemeControls} from './XTheme/ThemeControls';
+export {useXBrandStore, setXBrand, setXBrandByName, X_BRAND_PRESETS} from './XTheme/BrandColor';
+export type {XBrandPreset} from './XTheme/BrandColor';
+
+// ---------------------------------------------------------------------------
+// 视频预览
+// ---------------------------------------------------------------------------
+export {XVideoPreview} from './XVideoPreview';
+export type {XVideoPreviewProps} from './XVideoPreview';
+

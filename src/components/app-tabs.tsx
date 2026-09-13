@@ -31,7 +31,7 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="mine">
-        <NativeTabs.Trigger.Label>我的</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>关于</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require('@/assets/images/tabIcons/mine.png')}
           renderingMode="template"

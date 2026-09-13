@@ -11,9 +11,16 @@ import {
   XCascadeSelect,
   XMultiSelect,
   XToastService,
+  XUploadImage,
+  XUploadVideo,
+  registerXFormProRenderer,
   type XFormProInst,
 } from '@/x-components';
 import { DemoPage, Section, Card, Row } from './ui';
+
+// 注册 FormPro 自定义上传渲染器（依赖 expo-image-picker 等可选包，按需注册）
+registerXFormProRenderer('uploadImage', props => <XUploadImage {...(props as any ?? {})} max={6} />);
+registerXFormProRenderer('uploadVideo', props => <XUploadVideo {...(props as any ?? {})} />);
 
 const SEX_OPTIONS = [
   { label: '男', value: 1 },
@@ -197,6 +204,9 @@ export function XFormDemo() {
               ]}
             />
           </XForm.Item>
+          <XForm.Item label="现场照片" name="photos">
+            <XUploadImage max={4} />
+          </XForm.Item>
         </XForm>
         <Row>
           <XButton type="primary" onPress={() => form.submit()}>提交</XButton>
@@ -258,6 +268,7 @@ export function XFormProDemo() {
     city: [] as any[],
     hobbies: [] as string[],
     remark: '',
+    photos: [] as any[],
   });
   const formRef = useRef<XFormProInst<any>>(null);
 
@@ -267,6 +278,7 @@ export function XFormProDemo() {
     city: { required: true, type: 'cascadeSelect' as const, label: '地区', cascadeOptions: AREA_DATA },
     hobbies: { required: true, type: 'checkboxGroup' as const, label: '爱好', options: HOBBY_OPTIONS },
     remark: { type: 'input' as const, label: '备注' },
+    photos: { type: 'uploadImage' as const, label: '现场照片' },
   };
 
   return (
@@ -287,7 +299,7 @@ export function XFormProDemo() {
               XToastService.show({ message: '校验失败', type: 'error' });
             }
           }}>校验</XButton>
-          <XButton onPress={() => setVal({ name: '李四', sex: 0, city: [], hobbies: [], remark: '' })}>回填</XButton>
+          <XButton onPress={() => setVal({ name: '李四', sex: 0, city: [], hobbies: [], remark: '', photos: [] })}>回填</XButton>
         </Row>
       </Section>
     </DemoPage>

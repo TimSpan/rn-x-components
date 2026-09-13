@@ -4,19 +4,19 @@
     "slug": "x-components",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icons/x-icon-1024.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/icons/x-icon-1024.png",
       "bundleIdentifier": "com.anonymous.myapp"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#2080F0",
+        "foregroundImage": "./assets/icons/x-icon-foreground-1024.png",
+        "backgroundImage": "./assets/icons/x-icon-background-1024.png",
+        "monochromeImage": "./assets/icons/x-icon-monochrome-1024.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.anonymous.myapp"
@@ -35,7 +35,9 @@
           "imageWidth": 76
         }
       ],
-      "@react-native-vector-icons/ant-design"
+      "@react-native-vector-icons/ant-design",
+      "expo-audio",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": false,

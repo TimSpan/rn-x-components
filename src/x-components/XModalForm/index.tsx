@@ -14,9 +14,11 @@
  * ============================================================================
  */
 
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Pressable, StyleSheet, View, ViewStyle, StyleProp, ScrollView, Text} from 'react-native';
 import {XPullView} from '../XPullView';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 
 interface XModalFormProps {
   visible: boolean;
@@ -38,11 +40,15 @@ export function XModalForm({
   title,
   children,
   onSubmit,
-  confirmText = '确定',
-  cancelText = '取消',
+  confirmText,
+  cancelText,
   duration = 150,
   style,
 }: XModalFormProps) {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
+  const resolvedConfirm = confirmText ?? i18n('confirm');
+  const resolvedCancel = cancelText ?? i18n('cancel');
   /** 点确定：await 校验回调，只有没返回 false 才关闭 */
   const handleSubmit = useCallback(async () => {
     const result = await onSubmit?.();
@@ -51,6 +57,61 @@ export function XModalForm({
     }
   }, [onSubmit, onClose]);
 
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        /** 卡片本体：固定宽度 300、圆角、白底 */
+        card: {
+          width: 300,
+          backgroundColor: t.colorBgContainer,
+          borderRadius: 12,
+          overflow: 'hidden',
+        },
+        header: {
+          paddingHorizontal: 20,
+          paddingTop: 18,
+          paddingBottom: 12,
+        },
+        title: {
+          fontSize: 17,
+          fontWeight: '600',
+          textAlign: 'center',
+        },
+        body: {
+          maxHeight: 320,
+          paddingHorizontal: 20,
+          paddingVertical: 8,
+        },
+        footer: {
+          flexDirection: 'row',
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: t.colorSplit,
+        },
+        footerBtn: {
+          flex: 1,
+          height: 48,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        cancelBtn: {},
+        submitBtn: {
+          borderLeftWidth: StyleSheet.hairlineWidth,
+          borderLeftColor: t.colorSplit,
+        },
+        pressed: {
+          backgroundColor: t.colorBgLayout,
+        },
+        cancelText: {
+          fontSize: 16,
+        },
+        submitText: {
+          fontSize: 16,
+          fontWeight: '600',
+        },
+      }),
+    [t],
+  );
+
   return (
     // side='center'：居中弹层；overlayOpacity=0.25：遮罩比底部弹窗浅（内容居中，暗度低一点更通透）
     <XPullView visible={visible} onClose={onClose} side='center' duration={duration} overlayOpacity={0.25}>
@@ -58,7 +119,7 @@ export function XModalForm({
         {/* 标题区 */}
         {!!title && (
           <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={[styles.title, {color: t.colorText}]}>{title}</Text>
           </View>
         )}
         {/* 内容区：maxHeight 限制 + 可滚动，键盘弹出时内容不会被挤没 */}
@@ -68,67 +129,13 @@ export function XModalForm({
         {/* 底部按钮区：取消 | 确定 */}
         <View style={styles.footer}>
           <Pressable onPress={onClose} style={({pressed}) => [styles.footerBtn, styles.cancelBtn, pressed && styles.pressed]}>
-            <Text style={styles.cancelText}>{cancelText}</Text>
+            <Text style={[styles.cancelText, {color: t.colorTextSecondary}]}>{resolvedCancel}</Text>
           </Pressable>
           <Pressable onPress={handleSubmit} style={({pressed}) => [styles.footerBtn, styles.submitBtn, pressed && styles.pressed]}>
-            <Text style={styles.submitText}>{confirmText}</Text>
+            <Text style={[styles.submitText, {color: t.colorPrimary}]}>{resolvedConfirm}</Text>
           </Pressable>
         </View>
       </View>
     </XPullView>
   );
 }
-
-const styles = StyleSheet.create({
-  /** 卡片本体：固定宽度 300、圆角、白底 */
-  card: {
-    width: 300,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 12,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
-  },
-  body: {
-    maxHeight: 320,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-  },
-  footer: {
-    flexDirection: 'row',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#eee',
-  },
-  footerBtn: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cancelBtn: {},
-  submitBtn: {
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: '#eee',
-  },
-  pressed: {
-    backgroundColor: '#f5f5f5',
-  },
-  cancelText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  submitText: {
-    fontSize: 16,
-    color: '#2080F0',
-    fontWeight: '600',
-  },
-});

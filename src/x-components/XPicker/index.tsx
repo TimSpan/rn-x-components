@@ -16,16 +16,13 @@
  * ============================================================================
  */
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, StyleSheet, View, Text} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {XPullView} from '../XPullView';
 import {XWheel, XWheelHandle} from '../XWheel';
-
-/** 主题色（antd primary） */
-const PRIMARY = '#2080F0';
-/** 面板背景色（antd --adm-color-background） */
-const BG_COLOR = '#fff';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 
 /** 选项：label 显示文本，value 回传值 */
 export interface XPickerOption<T = any> {
@@ -45,8 +42,51 @@ export interface XPickerProps<T = any> {
   duration?: number;
 }
 
-export function XPicker<T = any>({visible, onClose, options, value, onChange, title = '请选择', duration = 200}: XPickerProps<T>) {
+export function XPicker<T = any>({visible, onClose, options, value, onChange, title, duration = 200}: XPickerProps<T>) {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
+  const resolvedTitle = title ?? i18n('pleaseSelect');
   const insets = useSafeAreaInsets();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        panel: {
+          backgroundColor: t.colorBgContainer,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          overflow: 'hidden',
+        },
+        toolbar: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          height: 48,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: t.colorSplit,
+        },
+        cancelBtn: {
+          fontSize: 15,
+        },
+        title: {
+          fontSize: 16,
+          fontWeight: '600',
+          flex: 1,
+          textAlign: 'center',
+          marginHorizontal: 8,
+        },
+        confirmBtn: {
+          fontSize: 15,
+          fontWeight: '600',
+        },
+        /** 单列占满整行（XWheel 自带 flex:1 与 240 高） */
+        columns: {
+          flexDirection: 'row',
+        },
+      }),
+    [t],
+  );
   /** draft：弹窗内的临时选中值，确定时才回传 */
   const [draft, setDraft] = useState<T | undefined>(value);
   /** 上一次的 visible，用于识别"本次渲染刚被打开"（与 XPickerDate 同款） */
@@ -86,13 +126,13 @@ export function XPicker<T = any>({visible, onClose, options, value, onChange, ti
         {/* 工具栏：左右对称的 取消/确定，中间标题（与 XPickerDate 一致） */}
         <View style={styles.toolbar}>
           <Pressable onPress={onClose} hitSlop={8}>
-            <Text style={styles.cancelBtn}>取消</Text>
+            <Text style={[styles.cancelBtn, {color: t.colorTextSecondary}]}>{i18n('cancel')}</Text>
           </Pressable>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
+          <Text style={[styles.title, {color: t.colorText}]} numberOfLines={1}>
+            {resolvedTitle}
           </Text>
           <Pressable onPress={handleConfirm} hitSlop={8}>
-            <Text style={styles.confirmBtn}>确定</Text>
+            <Text style={[styles.confirmBtn, {color: t.colorPrimary}]}>{i18n('confirm')}</Text>
           </Pressable>
         </View>
         {/* 单列滚轮：点行/拖拽改草稿，确定才生效 */}
@@ -103,42 +143,3 @@ export function XPicker<T = any>({visible, onClose, options, value, onChange, ti
     </XPullView>
   );
 }
-
-const styles = StyleSheet.create({
-  panel: {
-    backgroundColor: BG_COLOR,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    overflow: 'hidden',
-  },
-  toolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    height: 48,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#eee',
-  },
-  cancelBtn: {
-    fontSize: 15,
-    color: '#666',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    flex: 1,
-    textAlign: 'center',
-    marginHorizontal: 8,
-  },
-  confirmBtn: {
-    fontSize: 15,
-    color: PRIMARY,
-    fontWeight: '600',
-  },
-  /** 单列占满整行（XWheel 自带 flex:1 与 240 高） */
-  columns: {
-    flexDirection: 'row',
-  },
-});

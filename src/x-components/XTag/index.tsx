@@ -26,7 +26,7 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text, TextStyle, View, ViewStyle, StyleProp} from 'react-native';
 import AntDesign from '@react-native-vector-icons/ant-design';
-import {xTheme} from '../theme';
+import {useXTheme, xTheme, XTheme} from '../theme';
 
 export type XTagType = 'info' | 'primary' | 'success' | 'warning' | 'error' | 'default';
 export type XTagSize = 'small' | 'medium' | 'large';
@@ -77,15 +77,17 @@ const PRESET_COLORS: Record<string, string> = {
   purple: '#722ED1',
 };
 
-/** 语义色（状态色名 + type 统一走这张表，值取 theme token） */
-const SEMANTIC_COLORS: Record<string, {solid: string; lightBg: string}> = {
-  primary: {solid: xTheme.colorPrimary, lightBg: xTheme.colorPrimaryBg},
-  info: {solid: xTheme.colorPrimary, lightBg: xTheme.colorPrimaryBg},
-  success: {solid: xTheme.colorSuccess, lightBg: xTheme.colorSuccessBg},
-  warning: {solid: xTheme.colorWarning, lightBg: xTheme.colorWarningBg},
-  error: {solid: xTheme.colorError, lightBg: xTheme.colorErrorBg},
-  processing: {solid: xTheme.colorPrimary, lightBg: xTheme.colorPrimaryBg},
-};
+/** 语义色（状态色名 + type 统一走这张表，值取当前主题 token） */
+function getSemanticColors(t: XTheme): Record<string, {solid: string; lightBg: string}> {
+  return {
+    primary: {solid: t.colorPrimary, lightBg: t.colorPrimaryBg},
+    info: {solid: t.colorPrimary, lightBg: t.colorPrimaryBg},
+    success: {solid: t.colorSuccess, lightBg: t.colorSuccessBg},
+    warning: {solid: t.colorWarning, lightBg: t.colorWarningBg},
+    error: {solid: t.colorError, lightBg: t.colorErrorBg},
+    processing: {solid: t.colorPrimary, lightBg: t.colorPrimaryBg},
+  };
+}
 
 /** '#f50' / '#0f0' / '#rrggbbaa' -> rgba(alpha)，用于浅底/描边派生色 */
 function withAlpha(color: string, alpha: number): string {
@@ -109,7 +111,8 @@ function withAlpha(color: string, alpha: number): string {
 }
 
 /** color / type 解析成基准色（solid 色 + 浅底色），default 为灰色系 */
-function resolvePalette(color?: string, type: XTagType = 'default') {
+function resolvePalette(t: XTheme, color?: string, type: XTagType = 'default') {
+  const SEMANTIC_COLORS = getSemanticColors(t);
   // 1. 状态色名（antd 文档的 success/processing/...）
   const semantic = color ? SEMANTIC_COLORS[color] : undefined;
   if (semantic) {
@@ -129,7 +132,7 @@ function resolvePalette(color?: string, type: XTagType = 'default') {
   if (byType) {
     return {solid: byType.solid, lightBg: byType.lightBg, isDefault: false};
   }
-  return {solid: xTheme.colorTextSecondary, lightBg: 'rgba(0, 0, 0, 0.06)', isDefault: true};
+  return {solid: t.colorTextSecondary, lightBg: t.colorBgContainerDisabled, isDefault: true};
 }
 
 const SIZE_STYLES: Record<XTagSize, {fontSize: number; paddingH: number; paddingV: number; radius: number; iconSize: number}> = {
@@ -155,8 +158,9 @@ export function XTag({
   textStyle,
   testID,
 }: XTagProps) {
+  const t = useXTheme();
   const sizeStyle = SIZE_STYLES[size];
-  const palette = resolvePalette(color, type);
+  const palette = resolvePalette(t, color, type);
   const content = children ?? text;
 
   // 老组件行为：无文本不渲染（这里放宽为 icon/children 也算内容）
@@ -174,7 +178,7 @@ export function XTag({
 
   if (variant === 'solid') {
     backgroundColor = palette.solid;
-    textColor = palette.isDefault ? xTheme.colorText : xTheme.colorTextLightSolid;
+    textColor = palette.isDefault ? t.colorText : t.colorTextLightSolid;
   } else if (variant === 'outline') {
     borderColor = bordered ? palette.solid : 'transparent';
     borderWidth = bordered ? 1 : 0;

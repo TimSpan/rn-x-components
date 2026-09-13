@@ -1,0 +1,16 @@
+<!--
+  X-Components 品牌字标（无底版，透明底，适合暗色/亮色页面内嵌）
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="xMark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4AA6FF"/>
+      <stop offset="0.5" stop-color="#2080F0"/>
+      <stop offset="1" stop-color="#0E6FD8"/>
+    </linearGradient>
+  </defs>
+  <g stroke="url(#xMark)" stroke-width="86" stroke-linecap="round" fill="none">
+    <line x1="148" y1="148" x2="364" y2="364"/>
+    <line x1="364" y1="148" x2="148" y2="364"/>
+  </g>
+</svg>

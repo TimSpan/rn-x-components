@@ -17,6 +17,8 @@ import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {XPullView} from '../XPullView';
 import {XCheckbox} from '../XCheckbox';
 import {XButton} from '../XButton';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 import AntDesign from '@react-native-vector-icons/ant-design';
 
 export interface XMultiSelectProps {
@@ -30,7 +32,11 @@ export interface XMultiSelectProps {
   children?: ReactNode;
 }
 
-export function XMultiSelect({value = [], onChange, options, placeholder = '请选择', title, children}: XMultiSelectProps) {
+export function XMultiSelect({value = [], onChange, options, placeholder, title, children}: XMultiSelectProps) {
+  const theme = useXTheme();
+  const {t} = useXLocale();
+  const resolvedPlaceholder = placeholder ?? t('pleaseSelect');
+  const resolvedTitle = title ?? resolvedPlaceholder;
   const [visible, setVisible] = useState(false);
   const [draft, setDraft] = useState<any[]>([]);
 
@@ -66,29 +72,29 @@ export function XMultiSelect({value = [], onChange, options, placeholder = '请�
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.labelScrollContent}>
                 {selectedLabels.map((label, idx) => (
                   <Pressable key={idx} onPress={openModal}>
-                    <View style={styles.tag}>
-                      <Text style={styles.tagText}>{label}</Text>
+                    <View style={[styles.tag, {backgroundColor: theme.colorPrimaryBg}]}>
+                      <Text style={[styles.tagText, {color: theme.colorPrimary}]}>{label}</Text>
                     </View>
                   </Pressable>
                 ))}
               </ScrollView>
             ) : (
               <Pressable style={styles.placeholderWrap} onPress={openModal}>
-                <Text style={styles.placeholder}>{placeholder}</Text>
+                <Text style={[styles.placeholder, {color: theme.colorTextTertiary}]}>{resolvedPlaceholder}</Text>
               </Pressable>
             )}
           </View>
           <Pressable onPress={openModal} hitSlop={8}>
-            <AntDesign name='right' size={16} color='#bbb' />
+            <AntDesign name='right' size={16} color={theme.colorTextTertiary} />
           </Pressable>
         </View>
       )}
 
       {/* 底部弹层：XTopView 宿主渲染（XPullView） */}
       <XPullView visible={visible} onClose={handleCancel} side='bottom' duration={200}>
-        <View style={styles.panel}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>{title ?? placeholder}</Text>
+        <View style={[styles.panel, {backgroundColor: theme.colorBgContainer}]}>
+          <View style={[styles.header, {borderBottomColor: theme.colorSplit}]}>
+            <Text style={[styles.headerTitle, {color: theme.colorText}]}>{resolvedTitle}</Text>
           </View>
 
           {/* 选项列表：可竖向滚动 */}
@@ -100,18 +106,18 @@ export function XMultiSelect({value = [], onChange, options, placeholder = '请�
                   <XCheckbox checked={draft.includes(o.value)} disabled={o.disabled} />
                 </View>
                 <View pointerEvents='none' style={styles.optionLabelWrap}>
-                  <Text style={styles.optionLabel}>{o.label}</Text>
+                  <Text style={[styles.optionLabel, {color: theme.colorText}]}>{o.label}</Text>
                 </View>
               </Pressable>
             ))}
           </ScrollView>
 
-          <View style={styles.footer}>
+          <View style={[styles.footer, {borderTopColor: theme.colorSplit}]}>
             <XButton onPress={handleCancel} style={styles.cancelBtn}>
-              取消
+              {t('cancel')}
             </XButton>
             <XButton type='primary' onPress={handleConfirm} style={styles.confirmBtn}>
-              确定{draft.length > 0 ? `（${draft.length}）` : ''}
+              {t('confirm')}{draft.length > 0 ? `（${draft.length}）` : ''}
             </XButton>
           </View>
         </View>
@@ -139,14 +145,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tag: {
-    backgroundColor: '#E6F1FE',
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 3,
     marginRight: 6,
   },
   tagText: {
-    color: '#2080F0',
     fontSize: 13,
   },
   placeholderWrap: {
@@ -154,11 +158,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholder: {
-    color: '#bbb',
     fontSize: 15,
   },
   panel: {
-    backgroundColor: '#fff',
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
@@ -167,12 +169,10 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#eee',
   },
   headerTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#333',
   },
   optionList: {
     maxHeight: 380,
@@ -192,7 +192,6 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontSize: 15,
-    color: '#333',
   },
   footer: {
     flexDirection: 'row',
@@ -200,7 +199,6 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 24,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#eee',
   },
   cancelBtn: {
     flex: 1,

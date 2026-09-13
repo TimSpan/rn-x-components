@@ -5,6 +5,7 @@
 import React, {useState} from 'react';
 import {XPicker, XPickerOption} from '../../XPicker';
 import {FieldTrigger} from './FieldTrigger';
+import {useXLocale} from '../../XLocale';
 
 export interface XSelectFieldProps {
   value?: any;
@@ -16,6 +17,7 @@ export interface XSelectFieldProps {
 }
 
 export function XSelectField({value, onChange, options, placeholder, title, disabled}: XSelectFieldProps) {
+  const {t} = useXLocale();
   const [visible, setVisible] = useState(false);
   const option = options.find(o => o.value === value);
 
@@ -23,7 +25,7 @@ export function XSelectField({value, onChange, options, placeholder, title, disa
     <>
       <FieldTrigger
         text={option?.label}
-        placeholder={placeholder ?? `请选择${title ?? ''}`}
+        placeholder={placeholder ?? t('pleaseSelectLabel', {n: title ?? ''})}
         disabled={disabled}
         onPress={() => setVisible(true)}
       />
@@ -32,7 +34,7 @@ export function XSelectField({value, onChange, options, placeholder, title, disa
         onClose={() => setVisible(false)}
         options={options}
         value={value}
-        title={title ?? '请选择'}
+        title={title ?? t('pleaseSelect')}
         onChange={v => {
           onChange?.(v);
           setVisible(false);

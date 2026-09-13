@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useMemo, useRef} from 'react';
 import {View, StyleSheet, TouchableOpacity, LayoutChangeEvent, Text} from 'react-native';
 import Animated, {
   Easing,
@@ -11,7 +11,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import AntDesign from '@react-native-vector-icons/ant-design';
-import {xTheme} from '../theme';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 
 /* ============================================================================
  * XAnimatedSearchPanel —— 可折叠搜索面板
@@ -130,6 +131,123 @@ export const XAnimatedSearchPanel = ({
   defaultExpanded = false,
   onToggle,
 }: XAnimatedSearchPanelProps) => {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
+
+  /**
+   * style sheet 置于组件内，按主题对象 t 构造（color 字段需跟随暗黑模式）。
+   * t 在 light/dark 间切换时引用改变，useMemo 仅在此处重算。
+   */
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        card: {
+          backgroundColor: t.colorBgContainer,
+          borderRadius: t.borderRadiusXL,
+          marginHorizontal: 12,
+          paddingHorizontal: 12,
+          marginVertical: 12,
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 1},
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+          elevation: 1,
+        },
+
+        searchHeader: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingVertical: 16,
+        },
+        /** 给交叉淡入的两层文案撑出固定尺寸，见 JSX 注释 */
+        titleWrap: {
+          width: 100,
+          height: 22,
+          justifyContent: 'center',
+        },
+        titleLayer: {
+          position: 'absolute',
+          left: 0,
+          right: 0,
+        },
+        searchTitle: {
+          fontSize: t.fontSizeLG,
+          width: 100,
+          fontWeight: '500',
+          color: t.colorText,
+        },
+
+        /** overflow 静态声明，动画只改 height —— 这是折叠效果的实现基础 */
+        body: {
+          overflow: 'hidden',
+        },
+
+        searchRow: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 12,
+        },
+        searchLabel: {
+          width: 80,
+          fontSize: t.fontSize,
+          color: t.colorTextSecondary,
+        },
+        searchInput: {
+          flex: 1,
+          height: 40,
+          borderWidth: 1,
+          borderColor: t.colorBorder,
+          borderRadius: t.borderRadiusSM,
+          paddingHorizontal: 12,
+          paddingVertical: 2,
+          fontSize: t.fontSize,
+        },
+        dateText: {
+          fontSize: t.fontSize,
+          lineHeight: 34,
+          color: t.colorText,
+        },
+        placeholderText: {
+          lineHeight: 34,
+          fontSize: t.fontSize,
+          color: t.colorTextTertiary,
+        },
+        searchButtons: {
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          marginVertical: 16,
+        },
+        searchButton: {
+          paddingHorizontal: 24,
+          height: t.controlHeightSM,
+          borderRadius: t.borderRadiusSM,
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginLeft: 12,
+        },
+        resetButton: {
+          borderWidth: 1,
+          borderColor: t.colorPrimary,
+          backgroundColor: t.colorBgContainer,
+        },
+        resetButtonText: {
+          color: t.colorPrimary,
+          fontSize: t.fontSize,
+          fontWeight: '500',
+        },
+        submitButton: {
+          backgroundColor: t.colorPrimary,
+        },
+        submitButtonText: {
+          color: t.colorTextLightSolid,
+          fontSize: t.fontSize,
+          fontWeight: '500',
+        },
+      }),
+    [t],
+  );
+
   /**
    * progress：唯一的动画时间轴，0 = 完全收起，1 = 完全展开。
    * SharedValue 是一块 JS 与 UI 线程共享的内存，写入它不会触发 React 渲染，
@@ -270,14 +388,14 @@ export const XAnimatedSearchPanel = ({
             固定尺寸能防止标题区在动画中抖动、也避免 header 高度跟着变 */}
         <View style={styles.titleWrap}>
           <Animated.View style={[styles.titleLayer, expandTextStyle]}>
-            <Text style={styles.searchTitle}>展开搜索</Text>
+            <Text style={styles.searchTitle}>{i18n('expandSearch')}</Text>
           </Animated.View>
           <Animated.View style={[styles.titleLayer, collapseTextStyle]}>
-            <Text style={styles.searchTitle}>收起搜索</Text>
+            <Text style={styles.searchTitle}>{i18n('collapseSearch')}</Text>
           </Animated.View>
         </View>
         <Animated.View style={iconStyle}>
-          <AntDesign name='down' size={20} color={xTheme.colorText} />
+          <AntDesign name='down' size={20} color={t.colorText} />
         </Animated.View>
       </TouchableOpacity>
 
@@ -307,10 +425,10 @@ export const XAnimatedSearchPanel = ({
 
             <View style={styles.searchButtons}>
               <TouchableOpacity style={[styles.searchButton, styles.resetButton]} onPress={onReset} activeOpacity={0.7}>
-                <Text style={styles.resetButtonText}>重置</Text>
+                <Text style={styles.resetButtonText}>{i18n('reset')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.searchButton, styles.submitButton]} onPress={onSearch} activeOpacity={0.7}>
-                <Text style={styles.submitButtonText}>搜索</Text>
+                <Text style={styles.submitButtonText}>{i18n('search')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -322,114 +440,12 @@ export const XAnimatedSearchPanel = ({
 
 /**
  * 样式取值约定（同 X-Components 其他组件）：
- * 颜色 / 圆角 / 字号一律从 xTheme 取，组件内不写死色值；
+ * 颜色 / 圆角 / 字号一律从 theme token 取，组件内不写死色值；
  * 仅阴影基色是纯黑中性值，theme 中无对应 token，故保留字面量。
+ * 因 color 字段需跟随暗黑模式，style sheet 在组件内按主题对象 t 构造。
  */
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: xTheme.colorBgContainer,
-    borderRadius: xTheme.borderRadiusXL,
-    marginHorizontal: 12,
-    paddingHorizontal: 12,
-    marginVertical: 12,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-  },
 
-  searchHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  /** 给交叉淡入的两层文案撑出固定尺寸，见 JSX 注释 */
-  titleWrap: {
-    width: 100,
-    height: 22,
-    justifyContent: 'center',
-  },
-  titleLayer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-  },
-  searchTitle: {
-    fontSize: xTheme.fontSizeLG,
-    width: 100,
-    fontWeight: '500',
-    color: xTheme.colorText,
-  },
 
-  /** overflow 静态声明，动画只改 height —— 这是折叠效果的实现基础 */
-  body: {
-    overflow: 'hidden',
-  },
-
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  searchLabel: {
-    width: 80,
-    fontSize: xTheme.fontSize,
-    color: xTheme.colorTextSecondary,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderColor: xTheme.colorBorder,
-    borderRadius: xTheme.borderRadiusSM,
-    paddingHorizontal: 12,
-    paddingVertical: 2,
-    fontSize: xTheme.fontSize,
-  },
-  dateText: {
-    fontSize: xTheme.fontSize,
-    lineHeight: 34,
-    color: xTheme.colorText,
-  },
-  placeholderText: {
-    lineHeight: 34,
-    fontSize: xTheme.fontSize,
-    color: xTheme.colorTextTertiary,
-  },
-  searchButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginVertical: 16,
-  },
-  searchButton: {
-    paddingHorizontal: 24,
-    height: xTheme.controlHeightSM,
-    borderRadius: xTheme.borderRadiusSM,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 12,
-  },
-  resetButton: {
-    borderWidth: 1,
-    borderColor: xTheme.colorPrimary,
-    backgroundColor: xTheme.colorBgContainer,
-  },
-  resetButtonText: {
-    color: xTheme.colorPrimary,
-    fontSize: xTheme.fontSize,
-    fontWeight: '500',
-  },
-  submitButton: {
-    backgroundColor: xTheme.colorPrimary,
-  },
-  submitButtonText: {
-    color: xTheme.colorTextLightSolid,
-    fontSize: xTheme.fontSize,
-    fontWeight: '500',
-  },
-});
 
 export type {XAnimatedSearchPanelProps};
 export default XAnimatedSearchPanel;

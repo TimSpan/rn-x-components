@@ -19,9 +19,10 @@
  * - show 传参为 Partial 合并，只改传入的字段；
  * - DEV 环境未挂载时给出 console.warn，不再静默吞掉调用。
  */
-import React, {useCallback, useEffect, useRef, useState, type ReactNode} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {ActivityIndicator, Modal, StyleSheet, Text, View} from 'react-native';
-import {xTheme} from '../../theme';
+import {useXTheme} from '../../theme';
+import {useXLocale} from '../../XLocale';
 
 // ================= 类型 =================
 
@@ -48,56 +49,65 @@ type XLoadingModalHandle = {
 // ================= 纯 UI 组件 =================
 
 export const XLoadingModal: React.FC<XLoadingModalProps> = ({
-  title = '加载中...',
+  title,
   visible,
-  color = '#fff',
+  color,
   size = 'large',
   transparent = false,
 }) => {
+  const theme = useXTheme();
+  const {t: i18n} = useXLocale();
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        mask: {
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0,0,0,0.35)',
+        },
+        box: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          paddingHorizontal: 24,
+          paddingVertical: 18,
+          borderRadius: theme.borderRadiusLG,
+          // 深色半透明胶囊：明暗两种模式都压在暗色遮罩上，保持固定深色
+          backgroundColor: 'rgba(17,20,26,0.85)',
+          shadowColor: '#000',
+          shadowOpacity: 0.2,
+          shadowRadius: 16,
+          shadowOffset: {width: 0, height: 8},
+          elevation: 10,
+        },
+        boxTransparent: {
+          backgroundColor: 'transparent',
+          shadowOpacity: 0,
+          elevation: 0,
+        },
+        title: {
+          // 浅色实底文字：深色胶囊上的固定对比色
+          color: theme.colorTextLightSolid,
+          fontSize: theme.fontSize,
+          lineHeight: 22,
+        },
+      }),
+    [theme],
+  );
+  const resolvedTitle = title ?? i18n('loading');
+  const resolvedColor = color ?? theme.colorTextLightSolid;
   return (
     <Modal visible={visible} transparent animationType='fade' statusBarTranslucent presentationStyle='overFullScreen' hardwareAccelerated>
       <View style={styles.mask}>
         <View style={[styles.box, transparent && styles.boxTransparent]}>
-          <ActivityIndicator size={size} color={color} />
-          {!!title && <Text style={styles.title}>{title}</Text>}
+          <ActivityIndicator size={size} color={resolvedColor} />
+          {!!resolvedTitle && <Text style={styles.title}>{resolvedTitle}</Text>}
         </View>
       </View>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  mask: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.35)',
-  },
-  box: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 24,
-    paddingVertical: 18,
-    borderRadius: xTheme.borderRadiusLG,
-    backgroundColor: 'rgba(17,20,26,0.85)',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    shadowOffset: {width: 0, height: 8},
-    elevation: 10,
-  },
-  boxTransparent: {
-    backgroundColor: 'transparent',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  title: {
-    color: '#fff',
-    fontSize: xTheme.fontSize,
-    lineHeight: 22,
-  },
-});
 
 // ================= Provider + Service =================
 
@@ -105,8 +115,7 @@ const styles = StyleSheet.create({
 let handle: XLoadingModalHandle | null = null;
 
 const DEFAULT_CONFIG: XLoadingModalConfig = {
-  title: '加载中...',
-  color: '#fff',
+  // title / color 不在此写死：未传时由 XLoadingModal 解析为当前语言的 loading 文案与浅色实底色
   size: 'large',
   transparent: false,
 };

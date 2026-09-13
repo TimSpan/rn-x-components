@@ -18,6 +18,7 @@ import React from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {XButton} from '../XButton';
+import {useXTheme} from '../theme';
 import {
   XImagePreviewProvider,
   XImagePreviewService,
@@ -36,15 +37,19 @@ const ONLINE_IMAGES = [
 ];
 
 /** 演示区块 */
-const Section = ({title, description, children}: {title: string; description?: string; children: React.ReactNode}) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    {!!description && <Text style={styles.sectionDesc}>{description}</Text>}
-    <View style={styles.sectionBody}>{children}</View>
-  </View>
-);
+const Section = ({title, description, children}: {title: string; description?: string; children: React.ReactNode}) => {
+  const theme = useXTheme();
+  return (
+    <View style={[styles.section, {backgroundColor: theme.colorBgContainer, borderRadius: theme.borderRadiusXL}]}>
+      <Text style={[styles.sectionTitle, {color: theme.colorText}]}>{title}</Text>
+      {!!description && <Text style={[styles.sectionDesc, {color: theme.colorTextSecondary}]}>{description}</Text>}
+      <View style={styles.sectionBody}>{children}</View>
+    </View>
+  );
+};
 
 const XProvidersDemo = () => {
+  const theme = useXTheme();
   // ---- XToast ----
   const showToast = (type: 'success' | 'error' | 'info' | 'warning' | 'loading' | 'text') => {
     const map = {
@@ -83,7 +88,7 @@ const XProvidersDemo = () => {
       <XLoadingModalProvider>
         <XImagePreviewProvider>
           <XToastProvider>
-            <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+            <ScrollView style={[styles.screen, {backgroundColor: theme.colorBgLayout}]} contentContainerStyle={styles.content}>
               <Section title='XToast 轻提示' description='深色胶囊 + 语义图标，支持 top / center / bottom 三个位置'>
                 <View style={styles.row}>
                   <XButton type='primary' size='small' onPress={() => showToast('success')}>
@@ -151,7 +156,6 @@ const XProvidersDemo = () => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F5F6F8',
   },
   content: {
     padding: 16,
@@ -159,19 +163,15 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
     padding: 16,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: 'rgba(0,0,0,0.88)',
   },
   sectionDesc: {
     marginTop: 4,
     fontSize: 12,
-    color: 'rgba(0,0,0,0.45)',
     lineHeight: 18,
   },
   sectionBody: {

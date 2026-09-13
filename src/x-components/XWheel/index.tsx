@@ -22,13 +22,21 @@ import {Pressable, StyleSheet, View, Text} from 'react-native';
 import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import {useXTheme} from '../theme';
 
 /** 每行高度（antd: --item-height 34px） */
 const ITEM_HEIGHT = 34;
 /** 列可视高度（antd: --height 240px，约 7 行） */
 const VISIBLE_HEIGHT = 240;
-/** 遮罩渐变的背景色（antd --adm-color-background） */
-const BG_COLOR = '#fff';
+
+/** 把 #rrggbb 转成带透明度的 rgba（遮罩渐变用，避免写死白色背景） */
+const hexToRgba = (hex: string, alpha: number): string => {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 /**
  * 弹簧参数（antd: react-spring tension 400 / mass 0.8，换算到 Reanimated）。
  * damping 50 ≈ 轻微过阻尼，落位干脆利落，与 antd 观感一致。
@@ -122,6 +130,7 @@ const clampIndex = (items: XWheelOption[], value: any) => {
  */
 export const XWheel = React.memo(
   forwardRef<XWheelHandle, XWheelProps>(function XWheel({items, value, onSelect}, ref) {
+    const t = useXTheme();
     /** 受控 value 对应的目标索引 */
     const targetIndex = clampIndex(items, value);
     const listRef = useRef(items);
@@ -263,7 +272,7 @@ export const XWheel = React.memo(
             <Animated.View style={[styles.wheel, wheelStyle]}>
               {items.map((item, index) => (
                 <Pressable key={String(item.value)} onPress={() => handlePressItem(index)} style={styles.item}>
-                  <Text allowFontScaling={false} style={styles.itemText}>
+                  <Text allowFontScaling={false} style={[styles.itemText, {color: t.colorText}]}>
                     {item.label}
                   </Text>
                 </Pressable>
@@ -273,21 +282,21 @@ export const XWheel = React.memo(
         </GestureDetector>
         {/* 遮罩层（antd picker-view.less 的 mask）：上/下渐变把远处行淡出到背景色 */}
         <LinearGradient
-          colors={[BG_COLOR, 'rgba(255,255,255,0.6)']}
+          colors={[t.colorBgContainer, hexToRgba(t.colorBgContainer, 0.6)]}
           start={{x: 0, y: 0}}
           end={{x: 0, y: 1}}
           pointerEvents='none'
           style={styles.maskTop}
         />
         <LinearGradient
-          colors={['rgba(255,255,255,0.6)', BG_COLOR]}
+          colors={[hexToRgba(t.colorBgContainer, 0.6), t.colorBgContainer]}
           start={{x: 0, y: 0}}
           end={{x: 0, y: 1}}
           pointerEvents='none'
           style={styles.maskBottom}
         />
         {/* 中间选中框：两条 1px 边框（antd mask-middle） */}
-        <View pointerEvents='none' style={styles.maskMiddle} />
+        <View pointerEvents='none' style={[styles.maskMiddle, {borderColor: t.colorSplit}]} />
       </View>
     );
   }),
@@ -319,7 +328,6 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
-    color: '#333',
   },
   /** 上遮罩：远端全背景色 -> 靠中间半透明（antd mask-top 的渐变） */
   maskTop: {
@@ -346,6 +354,5 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#e5e5e5',
   },
 });

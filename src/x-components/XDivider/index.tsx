@@ -17,7 +17,7 @@
 import React from 'react';
 import {StyleSheet, View, StyleProp, ViewStyle, Text} from 'react-native';
 
-import {xTheme} from '../theme';
+import {useXTheme, xTheme} from '../theme';
 
 export interface XDividerProps {
   type?: 'horizontal' | 'vertical';
@@ -41,9 +41,12 @@ export function XDivider({
   plain = false,
   children,
   style,
-  color = xTheme.colorSplit,
+  color,
   height,
 }: XDividerProps) {
+  const t = useXTheme();
+  const lineColor = color ?? t.colorSplit;
+
   // ---- 垂直分隔线：一条竖线，宽度 hairline，高度默认跟随父容器拉伸 ----
   if (type === 'vertical') {
     return (
@@ -53,7 +56,7 @@ export function XDivider({
             width: StyleSheet.hairlineWidth,
             height: height,
             alignSelf: height ? 'center' : 'stretch',
-            backgroundColor: color,
+            backgroundColor: lineColor,
             marginHorizontal: 8,
           },
           style,
@@ -68,8 +71,8 @@ export function XDivider({
       <View
         style={[
           styles.line,
-          {backgroundColor: dashed ? 'transparent' : color},
-          dashed && {borderTopWidth: StyleSheet.hairlineWidth * 2, borderTopColor: color, borderStyle: 'dashed'},
+          {backgroundColor: dashed ? 'transparent' : lineColor},
+          dashed && {borderTopWidth: StyleSheet.hairlineWidth * 2, borderTopColor: lineColor, borderStyle: 'dashed'},
           style,
         ]}
       />
@@ -87,14 +90,17 @@ export function XDivider({
   const lineStyle: StyleProp<ViewStyle> = [
     styles.line,
     styles.titleLine,
-    {backgroundColor: dashed ? 'transparent' : color},
-    dashed && {borderTopWidth: StyleSheet.hairlineWidth * 2, borderTopColor: color, borderStyle: 'dashed'},
+    {backgroundColor: dashed ? 'transparent' : lineColor},
+    dashed && {borderTopWidth: StyleSheet.hairlineWidth * 2, borderTopColor: lineColor, borderStyle: 'dashed'},
   ];
 
   return (
     <View style={[styles.titleContainer, {marginLeft: leftMargin, marginRight: rightMargin}, style]}>
       {hasLeftLine && <View style={lineStyle} />}
-      <Text style={[styles.title, plain && styles.titlePlain]} allowFontScaling={false}>
+      <Text
+        style={[styles.title, {color: plain ? t.colorTextTertiary : t.colorText}, plain && {fontSize: xTheme.fontSizeSM}]}
+        allowFontScaling={false}
+      >
         {children}
       </Text>
       {hasRightLine && <View style={lineStyle} />}
@@ -117,13 +123,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: xTheme.fontSize,
-    color: xTheme.colorText,
     marginHorizontal: 12,
-  },
-  /** plain：标题弱化（antd 同款：更浅的文字色） */
-  titlePlain: {
-    color: xTheme.colorTextTertiary,
-    fontSize: xTheme.fontSizeSM,
   },
 });
 

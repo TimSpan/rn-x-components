@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';
-import {xTheme} from '../../theme';
+import {useXTheme} from '../../theme';
+import {useXLocale} from '../../XLocale';
 import AntDesign from '@react-native-vector-icons/ant-design';
 
 export interface FieldTriggerProps {
@@ -16,13 +17,25 @@ export interface FieldTriggerProps {
   disabled?: boolean;
 }
 
-export function FieldTrigger({text, placeholder = '请选择', onPress, disabled}: FieldTriggerProps) {
+export function FieldTrigger({text, placeholder, onPress, disabled}: FieldTriggerProps) {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
+  const resolvedPlaceholder = placeholder ?? i18n('pleaseSelect');
   return (
-    <Pressable style={({pressed}) => [styles.trigger, pressed && styles.pressed, disabled && styles.disabled]} onPress={onPress} disabled={disabled}>
-      <Text style={[styles.text, !text && styles.placeholder]} allowFontScaling={false}>
-        {text || placeholder}
+    <Pressable
+      style={({pressed}) => [
+        styles.trigger,
+        {borderColor: t.colorBorder, backgroundColor: disabled ? t.colorBgContainerDisabled : t.colorBgLayout},
+        pressed && styles.pressed,
+        disabled && styles.disabled,
+      ]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text style={[styles.text, {color: text ? t.colorText : t.colorTextQuaternary}, !text && styles.placeholder]} allowFontScaling={false}>
+        {text || resolvedPlaceholder}
       </Text>
-      <AntDesign name='right' size={16} color='#bbb' />
+      <AntDesign name='right' size={16} color={t.colorTextTertiary} />
     </Pressable>
   );
 }
@@ -33,26 +46,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: '#fafafa',
     minHeight: 40,
   },
   pressed: {
     opacity: 0.75,
   },
-  disabled: {
-    backgroundColor: xTheme.colorBgContainerDisabled,
-  },
+  disabled: {},
   text: {
     flex: 1,
     fontSize: 15,
-    color: '#333',
     marginRight: 8,
   },
-  placeholder: {
-    color: xTheme.colorTextQuaternary,
-  },
+  placeholder: {},
 });

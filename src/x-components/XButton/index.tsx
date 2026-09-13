@@ -19,7 +19,7 @@
  */
 import React from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle, StyleProp} from 'react-native';
-import {xTheme} from '../theme';
+import {useXTheme, xTheme} from '../theme';
 
 export type XButtonType = 'primary' | 'default' | 'ghost' | 'dashed' | 'link' | 'text';
 export type XButtonSize = 'large' | 'middle' | 'small';
@@ -88,22 +88,23 @@ export function XButton({
   textStyle,
   testID,
 }: XButtonProps) {
+  const t = useXTheme();
   const s = useSizeStyles(size, shape);
   // 语义基准色：danger 用错误红，否则用主色
-  const baseColor = danger ? xTheme.colorError : xTheme.colorPrimary;
+  const baseColor = danger ? t.colorError : t.colorPrimary;
 
   const isFilled = type === 'primary'; // 只有 primary 是实底
   const isTextLike = type === 'link' || type === 'text'; // 无边框无底
   const isGhostOrDashed = type === 'ghost' || type === 'dashed'; // 透明底 + 描边
 
   // ---- 按 type × disabled 组合算出底色 / 文字色 / 边框色 ----
-  let backgroundColor: string = xTheme.colorBgContainer;
-  let textColor: string = xTheme.colorText;
-  let borderColor: string | undefined = xTheme.colorBorder;
+  let backgroundColor: string = t.colorBgContainer;
+  let textColor: string = t.colorText;
+  let borderColor: string | undefined = t.colorBorder;
 
   if (isFilled) {
     backgroundColor = baseColor;
-    textColor = '#fff';
+    textColor = t.colorTextLightSolid;
     borderColor = undefined;
   } else if (isGhostOrDashed) {
     backgroundColor = 'transparent';
@@ -119,12 +120,12 @@ export function XButton({
   const inert = disabled || loading;
   if (inert) {
     if (isFilled) {
-      backgroundColor = xTheme.colorPrimaryDisabled;
-      textColor = '#fff';
+      backgroundColor = t.colorPrimaryDisabled;
+      textColor = t.colorTextLightSolid;
     } else {
-      backgroundColor = isTextLike ? 'transparent' : xTheme.colorBgContainerDisabled;
-      textColor = xTheme.colorTextQuaternary;
-      borderColor = isTextLike ? undefined : xTheme.colorBorder;
+      backgroundColor = isTextLike ? 'transparent' : t.colorBgContainerDisabled;
+      textColor = t.colorTextQuaternary;
+      borderColor = isTextLike ? undefined : t.colorBorder;
     }
   }
 
@@ -145,7 +146,7 @@ export function XButton({
   const content = (
     <>
       {loading && (
-        <ActivityIndicator size='small' color={isFilled ? '#fff' : baseColor} style={styles.spinner} />
+        <ActivityIndicator size='small' color={isFilled ? t.colorTextLightSolid : baseColor} style={styles.spinner} />
       )}
       {/* 非 loading 时也保留占位，避免 loading 切换时文字抖动 */}
       {!loading && icon != null && <View style={styles.iconWrap}>{icon}</View>}

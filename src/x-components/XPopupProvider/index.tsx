@@ -21,6 +21,7 @@
 import React from 'react';
 import {XConfirmForm} from '../XConfirmForm';
 import {XTopView} from '../XTopView';
+import {XActionSheetGlobalOverlay} from '../XActionSheet/global';
 
 export const XPopupProvider = ({children}: {children: React.ReactNode}) => {
   return (
@@ -29,6 +30,8 @@ export const XPopupProvider = ({children}: {children: React.ReactNode}) => {
       {children}
       {/* 命令式确认框的常驻实例（内部走 XPullView → XTopView） */}
       <XConfirmForm />
+      {/* 命令式 ActionSheet 的常驻实例 */}
+      <XActionSheetGlobalOverlay />
       {/* 全局弹窗宿主：所有弹层最终都画在这里，天然在最上层 */}
       <XTopView />
     </>

@@ -91,6 +91,7 @@ export function XDividerDemo() {
 // ============================================================================
 export function XInputDemo() {
   const [val, setVal] = useState('');
+  const [amount, setAmount] = useState('');
   return (
     <DemoPage>
       <Section title="基本输入">
@@ -104,8 +105,18 @@ export function XInputDemo() {
       </Section>
       <Section title="禁用 / 多行">
         <XInput placeholder="禁用状态" disabled />
-        <View style={{ height: 12 }} />
+        <View style={{height: 12}} />
         <XInput placeholder="多行文本（textarea）" multiline />
+      </Section>
+      <Section title="自定义数字键盘（customKeyboard='numeric'）">
+        <XInput
+          placeholder="点击输入金额"
+          value={amount}
+          onChangeText={setAmount}
+          customKeyboard="numeric"
+          maxLength={10}
+        />
+        <Text style={styles.resultText}>金额：¥{amount || '0.00'}</Text>
       </Section>
     </DemoPage>
   );

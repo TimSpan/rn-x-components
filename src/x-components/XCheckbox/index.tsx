@@ -17,7 +17,7 @@ import React, {createContext, useContext, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, View, StyleProp, ViewStyle, TextStyle, Text} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
-import {xTheme} from '../theme';
+import {useXTheme, xTheme} from '../theme';
 
 /** antd Checkbox onChange 事件对象的 RN 等价物 */
 export interface XCheckboxChangeEvent {
@@ -67,6 +67,7 @@ export function XCheckbox({
   textStyle,
   testID,
 }: XCheckboxProps) {
+  const t = useXTheme();
   const group = useContext(CheckboxGroupContext);
   const [innerChecked, setInnerChecked] = useState(!!defaultChecked);
 
@@ -99,7 +100,7 @@ export function XCheckbox({
     >
       <XCheckboxIndicator checked={isChecked} indeterminate={indeterminate} disabled={isDisabled} />
       {children != null && (
-        <Text style={[styles.label, isDisabled && styles.labelDisabled, textStyle]} allowFontScaling={false}>
+        <Text style={[styles.label, {color: isDisabled ? t.colorTextQuaternary : t.colorText}, textStyle]} allowFontScaling={false}>
           {children}
         </Text>
       )}
@@ -114,18 +115,19 @@ export function XCheckbox({
  * 那种画法旋转后的视觉包围盒超出布局盒，会出现勾显示不全的问题。
  */
 function XCheckboxIndicator({checked, indeterminate, disabled}: {checked: boolean; indeterminate: boolean; disabled: boolean}) {
+  const t = useXTheme();
   const active = checked || indeterminate;
   // 底色：选中/半选用主色（禁用时用禁用灰），否则透明白底
   const bgColor = disabled
     ? active
-      ? xTheme.colorBgContainerDisabled
-      : xTheme.colorBgContainer
+      ? t.colorBgContainerDisabled
+      : t.colorBgContainer
     : active
-    ? xTheme.colorPrimary
-    : xTheme.colorBgContainer;
-  const borderColor = disabled ? xTheme.colorBorder : active ? xTheme.colorPrimary : xTheme.colorBorder;
+      ? t.colorPrimary
+      : t.colorBgContainer;
+  const borderColor = disabled ? t.colorBorder : active ? t.colorPrimary : t.colorBorder;
   // 禁用时勾用灰色（白勾在禁用浅灰底上看不见）
-  const checkColor = disabled ? xTheme.colorTextQuaternary : '#fff';
+  const checkColor = disabled ? t.colorTextQuaternary : t.colorTextLightSolid;
 
   return (
     <View style={[styles.box, {backgroundColor: bgColor, borderColor}]}>
@@ -134,7 +136,7 @@ function XCheckboxIndicator({checked, indeterminate, disabled}: {checked: boolea
           <Path d='M2 6.5 L4.8 9.2 L10 3' stroke={checkColor} strokeWidth={2} fill='none' strokeLinecap='round' strokeLinejoin='round' />
         </Svg>
       )}
-      {indeterminate && !checked && <View style={[styles.dash, {backgroundColor: disabled ? xTheme.colorTextQuaternary : xTheme.colorPrimary}]} />}
+      {indeterminate && !checked && <View style={[styles.dash, {backgroundColor: disabled ? t.colorTextQuaternary : t.colorPrimary}]} />}
     </View>
   );
 }
@@ -219,11 +221,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: xTheme.fontSize,
-    color: xTheme.colorText,
     marginLeft: 8,
-  },
-  labelDisabled: {
-    color: xTheme.colorTextQuaternary,
   },
   group: {
     flexDirection: 'row',

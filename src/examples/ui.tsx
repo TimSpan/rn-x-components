@@ -1,20 +1,23 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useXTheme } from '@/x-components';
 
 /** 示例区块标题 */
 export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const t = useXTheme();
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.sectionBody}>{children}</View>
+    <View style={[styles.section, {backgroundColor: t.colorBgContainer}]}>
+      <Text style={[styles.sectionTitle, {color: t.colorTextTertiary, backgroundColor: t.colorBgLayout}]}>{title}</Text>
+      <View style={[styles.sectionBody, {borderTopColor: t.colorSplit}]}>{children}</View>
     </View>
   );
 }
 
 /** 示例页面容器（ScrollView + SafeArea） */
 export function DemoPage({ children }: { children: React.ReactNode }) {
+  const t = useXTheme();
   return (
-    <View style={styles.page}>
+    <View style={[styles.page, {backgroundColor: t.colorBgLayout}]}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {children}
       </ScrollView>

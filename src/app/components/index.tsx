@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ThemeControls } from "@/x-components";
 
 interface CompItem {
   name: string;
@@ -156,6 +157,40 @@ const GROUPS: CompGroup[] = [
       },
     ],
   },
+  {
+    title: "主题与国际化",
+    items: [
+      {
+        name: "XThemeConfig",
+        label: "XTheme 主题与国际化",
+        desc: "暗黑模式、中英切换（全局生效）",
+      },
+    ],
+  },
+  {
+    title: "交互组件",
+    items: [
+      { name: "XCarousel", label: "XCarousel 轮播图", desc: "自动播放/无限循环/指示点" },
+      { name: "XTabs", label: "XTabs 选项卡", desc: "line/button、滑动联动、懒加载" },
+      { name: "XDropdownMenu", label: "XDropdownMenu 下拉菜单", desc: "基于 XTopView 宿主" },
+      { name: "XElevator", label: "XElevator 电梯楼层", desc: "右侧导航+分组吸顶" },
+      { name: "XNumberKeyboard", label: "XNumberKeyboard 数字键盘", desc: "弹出模式为主，乱序/小数点" },
+      { name: "XLicensePlate", label: "XLicensePlate 车牌输入", desc: "三段键盘，新能源末位 D/F" },
+    ],
+  },
+  {
+    title: "选择与媒体",
+    items: [
+      { name: "XCalendar", label: "XCalendar 日历", desc: "单选/周选/范围/多选" },
+      { name: "XCalendarPopup", label: "XCalendarPopup 弹窗日历", desc: "底部弹出，取消/确定工具栏" },
+      { name: "XRecord", label: "XRecord 录音", desc: "expo-audio，试听/重录/使用" },
+      { name: "XChart", label: "XChart 图表", desc: "SVG 自研：折线/柱状/环形" },
+      { name: "XSignature", label: "XSignature 普通签名", desc: "连笔签名，导出 base64" },
+      { name: "XSignatureSkia", label: "XSignatureSkia 逐字签名", desc: "Skia 高性能逐字签名" },
+      { name: "XUploadImage", label: "XUploadImage 图片上传", desc: "适配器：Mock/MinIO 预签名" },
+      { name: "XUploadVideo", label: "XUploadVideo 视频上传", desc: "单个视频，适配器驱动" },
+    ],
+  },
 ];
 
 export default function ComponentsList() {
@@ -163,7 +198,16 @@ export default function ComponentsList() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "组件" }} />
+      <Stack.Screen
+        options={{
+          title: "组件",
+          headerRight: () => (
+            <View style={{marginRight: 8}}>
+              <ThemeControls compact />
+            </View>
+          ),
+        }}
+      />
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}

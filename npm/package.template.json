@@ -1,0 +1,60 @@
+{
+  "name": "react-native-x-components",
+  "version": "0.1.0",
+  "description": "Ant Design 风格的 React Native (Expo) 组件库：表单/弹层(TopView)/日历/Skia逐字签名/上传适配器(MinIO预签名)/轻量图表，内置暗黑模式与中英双语。",
+  "main": "dist/index.js",
+  "react-native": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "react-native",
+    "expo",
+    "components",
+    "ui-kit",
+    "antd",
+    "ant-design",
+    "calendar",
+    "signature",
+    "skia",
+    "upload",
+    "minio",
+    "presigned",
+    "charts",
+    "dark-mode",
+    "i18n",
+    "topview",
+    "popup"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maoyuxiang/rn-x-components.git"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.74.0",
+    "react-native-reanimated": ">=3.17.0",
+    "react-native-safe-area-context": ">=4.0.0",
+    "react-native-svg": ">=14.0.0",
+    "react-native-gesture-handler": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@shopify/react-native-skia": { "optional": true },
+    "@react-native-vector-icons/ant-design": { "optional": true },
+    "expo-audio": { "optional": true },
+    "expo-file-system": { "optional": true },
+    "expo-image-manipulator": { "optional": true },
+    "expo-image-picker": { "optional": true },
+    "react-native-linear-gradient": { "optional": true },
+    "react-native-zoom-toolkit": { "optional": true }
+  },
+  "dependencies": {
+    "dayjs": "^1.11.0",
+    "zustand": "^5.0.0"
+  }
+}

@@ -14,6 +14,7 @@ import {XSelectField} from './components/XSelectField';
 import {XDateField} from './components/XDateField';
 import type {XFormInstance} from '../XForm';
 import type {XFormProItemProps} from './types';
+import type {XLocaleKey} from '../XLocale';
 
 // ---------------------------------------------------------------------------
 // 自定义渲染器注册（将需要额外依赖的组件从核心库剥离）
@@ -40,10 +41,14 @@ export function registerXFormProRenderer(type: string, renderer: XFormProCustomR
 /**
  * 渲染单个表单项的输入控件（value/onChange 由 XForm.Item 注入，这里只管组件形态）
  */
-export function renderXFormField(item: XFormProItemProps<any, any>, form: XFormInstance<any>) {
+export function renderXFormField(
+  item: XFormProItemProps<any, any>,
+  form: XFormInstance<any>,
+  t: (key: XLocaleKey, params?: Record<string, string | number>) => string,
+) {
   const placeholder =
     item.componentsProps?.placeholder ??
-    (item.type === 'input' ? `请输入${item.label ?? ''}` : `请选择${item.label ?? ''}`);
+    (item.type === 'input' ? t('pleaseInputLabel', {n: item.label ?? ''}) : t('pleaseSelectLabel', {n: item.label ?? ''}));
 
   switch (item.type) {
     case 'custom':

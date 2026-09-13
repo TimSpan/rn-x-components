@@ -45,7 +45,7 @@
 import React, {createContext, useContext, useEffect, useMemo, useReducer, useRef} from 'react';
 import {StyleSheet, View, StyleProp, ViewStyle, TextStyle, Text} from 'react-native';
 
-import {xTheme} from '../theme';
+import {useXTheme, xTheme} from '../theme';
 import {FormStore, XFieldEntity} from './FormStore';
 import {useForm} from './useForm';
 import {defaultGetValueFromEvent} from './utils';
@@ -177,13 +177,14 @@ export interface XFormItemProps {
 }
 
 function XFormItem(props: XFormItemProps) {
+  const t = useXTheme();
   const ctx = useContext(XFormContext);
 
   // 脱离 <XForm> 使用：按纯布局渲染（hooks 必须无条件调用，所以早退分支放 Inner 外）
   if (!ctx) {
     return (
       <View testID={props.testID} style={[styles.item, props.style]}>
-        {props.label != null && <Text style={styles.label}>{props.label}</Text>}
+        {props.label != null && <Text style={[styles.label, {color: t.colorText}]}>{props.label}</Text>}
         {/* 无 ctx 的降级分支不处理函数式 children（联动依赖 store） */}
         {typeof props.children === 'function' ? null : props.children}
       </View>
@@ -219,6 +220,7 @@ function XFormItemInner(props: XFormItemProps & {ctx: XFormContextValue}) {
     ctx,
   } = props;
   const {store, formInstance, layout, labelWidth: formLabelWidth, labelStyle: formLabelStyle, requiredMark} = ctx;
+  const t = useXTheme();
 
   // 订阅 store：任何值/错误变化 bump 一次，本 Item 读自己的最新值
   const [, forceUpdate] = useReducer(c => c + 1, 0);
@@ -264,11 +266,11 @@ function XFormItemInner(props: XFormItemProps & {ctx: XFormContextValue}) {
   const helpText: React.ReactNode = manualActive ? help : autoErrors.length ? autoErrors.join('，') : null;
   const helpColorStyle = manualActive
     ? effectiveStatus === 'warning'
-      ? styles.helpWarning
+      ? {color: t.colorWarning}
       : effectiveStatus === 'error' || effectiveStatus === undefined
-      ? styles.helpError
-      : styles.help
-    : styles.helpError;
+      ? {color: t.colorError}
+      : {color: t.colorTextTertiary}
+    : {color: t.colorError};
 
   // ---- children 处理：函数式 or 注入 value/onChange ----
   let childNode: React.ReactNode = typeof children === 'function' ? null : children;
@@ -316,15 +318,15 @@ function XFormItemInner(props: XFormItemProps & {ctx: XFormContextValue}) {
     <View testID={testID} style={[styles.item, isHorizontal && styles.itemHorizontal, style]}>
       {label != null && (
         <View style={[styles.labelRow, isHorizontal && {width: effectiveLabelWidth, marginBottom: 0, marginRight: 12}]}>
-          {showRequiredMark && <Text style={styles.requiredStar}>*</Text>}
-          <Text style={[styles.label, formLabelStyle, labelStyle]} allowFontScaling={false}>
+          {showRequiredMark && <Text style={[styles.requiredStar, {color: t.colorError}]}>*</Text>}
+          <Text style={[styles.label, {color: t.colorText}, formLabelStyle, labelStyle]} allowFontScaling={false}>
             {label}
           </Text>
         </View>
       )}
       <View style={isHorizontal ? styles.controlHorizontal : styles.control}>
         {childNode}
-        {helpText != null && <Text style={[styles.help, helpColorStyle]}>{helpText}</Text>}
+        {helpText != null && <Text style={[styles.help, {color: t.colorTextTertiary}, helpColorStyle]}>{helpText}</Text>}
       </View>
     </View>
   );
@@ -360,10 +362,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: xTheme.fontSize,
-    color: xTheme.colorText,
   },
   requiredStar: {
-    color: xTheme.colorError,
     marginRight: 4,
     fontSize: xTheme.fontSize,
   },
@@ -375,15 +375,8 @@ const styles = StyleSheet.create({
   },
   help: {
     fontSize: xTheme.fontSizeSM,
-    color: xTheme.colorTextTertiary,
     marginTop: 6,
     lineHeight: 18,
-  },
-  helpError: {
-    color: xTheme.colorError,
-  },
-  helpWarning: {
-    color: xTheme.colorWarning,
   },
 });
 

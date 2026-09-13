@@ -26,7 +26,7 @@ import React, {createContext, useCallback, useContext, useEffect, useRef, useSta
 import {ActivityIndicator, Animated, StyleSheet, Text, View} from 'react-native';
 import AntDesign from '@react-native-vector-icons/ant-design';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {xTheme} from '../../theme';
+import {useXTheme} from '../../theme';
 
 // ================= 类型定义 =================
 
@@ -63,6 +63,7 @@ const TYPE_ICON = {
 // ================= 单条 Toast UI =================
 
 const XToastItem = ({toast, onClose}: {toast: XToastState; onClose: () => void}) => {
+  const theme = useXTheme();
   const opacity = useRef(new Animated.Value(0)).current;
   const fromTop = toast.position === 'top';
   const translateY = useRef(new Animated.Value(fromTop ? -24 : 24)).current;
@@ -96,11 +97,13 @@ const XToastItem = ({toast, onClose}: {toast: XToastState; onClose: () => void})
   return (
     <Animated.View style={[styles.toast, {opacity, transform: [{translateY}]}]}>
       {toast.type === 'loading' ? (
-        <ActivityIndicator size='small' color='#fff' />
+        <ActivityIndicator size='small' color={theme.colorTextLightSolid} />
       ) : (
         icon && <AntDesign name={icon.name} size={18} color={icon.color} />
       )}
-      {!!toast.message && <Text style={styles.text}>{toast.message}</Text>}
+      {!!toast.message && (
+        <Text style={[styles.text, {color: theme.colorTextLightSolid, fontSize: theme.fontSize}]}>{toast.message}</Text>
+      )}
     </Animated.View>
   );
 };
@@ -114,6 +117,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 999,
+    // 深色胶囊：明暗两种模式都保持固定深色底，保证语义图标对比度
     backgroundColor: 'rgba(23,26,31,0.94)',
     shadowColor: '#000',
     shadowOpacity: 0.25,
@@ -122,8 +126,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   text: {
-    color: '#fff',
-    fontSize: xTheme.fontSize,
     lineHeight: 20,
     flexShrink: 1,
   },

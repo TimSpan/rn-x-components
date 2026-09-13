@@ -28,9 +28,11 @@
  * ============================================================================
  */
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {XModalForm} from '../XModalForm';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 
 /** show 时的配置 */
 export interface XConfirmFormOptions {
@@ -54,6 +56,8 @@ interface ConfirmFormHandle {
  * 本身也是一个"受控的 XModalForm"：visible 由内部状态控制。
  */
 export const XConfirmFormComponent = () => {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
   /** 是否显示（由 show/hide 控制，页面无需感知） */
   const [visible, setVisible] = useState(false);
   /** 本次显示的配置 */
@@ -83,13 +87,32 @@ export const XConfirmFormComponent = () => {
     return () => XConfirmFormService._setHost(null);
   }, [show, hide]);
 
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        content: {
+          fontSize: 14,
+          lineHeight: 22,
+          textAlign: 'center',
+        },
+        dangerWrap: {
+          marginTop: 12,
+        },
+        dangerHint: {
+          fontSize: 12,
+          textAlign: 'center',
+        },
+      }),
+    [],
+  );
+
   return (
     <XModalForm
       visible={visible}
       onClose={() => hide(false)}
       title={options.title}
-      confirmText={options.confirmText ?? '确定'}
-      cancelText={options.cancelText ?? '取消'}
+      confirmText={options.confirmText}
+      cancelText={options.cancelText}
       onSubmit={() => {
         // 点确定：兑现 true 并关闭
         hide(true);
@@ -97,33 +120,16 @@ export const XConfirmFormComponent = () => {
       }}
     >
       {/* content 是字符串就按普通文案居中显示，否则直接渲染 ReactNode */}
-      {typeof options.content === 'string' ? <Text style={styles.content}>{options.content}</Text> : options.content}
+      {typeof options.content === 'string' ? <Text style={[styles.content, {color: t.colorTextSecondary}]}>{options.content}</Text> : options.content}
       {/* 危险操作警示 */}
       {options.danger && (
         <View style={styles.dangerWrap}>
-          <Text style={styles.dangerHint}>此操作不可撤销</Text>
+          <Text style={[styles.dangerHint, {color: t.colorError}]}>{i18n('operationIrreversible')}</Text>
         </View>
       )}
     </XModalForm>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    fontSize: 14,
-    lineHeight: 22,
-    color: '#666',
-    textAlign: 'center',
-  },
-  dangerWrap: {
-    marginTop: 12,
-  },
-  dangerHint: {
-    fontSize: 12,
-    color: '#f5222d',
-    textAlign: 'center',
-  },
-});
 
 /**
  * XConfirmFormService —— 模块级全局服务

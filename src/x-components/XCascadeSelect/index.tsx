@@ -19,7 +19,8 @@ import React, {useMemo, useRef, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {XPullView} from '../XPullView';
 import {XWheel, XWheelHandle, XWheelOption} from '../XWheel';
-import {xTheme} from '../theme';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 import AntDesign from '@react-native-vector-icons/ant-design';
 
 export interface XCascadeOption {
@@ -61,7 +62,11 @@ function isPathComplete(options: XCascadeOption[], path: any[]): boolean {
   return !nodes[nodes.length - 1].children?.length;
 }
 
-export function XCascadeSelect({value, onChange, options, placeholder = '请选择', title = '请选择', children}: XCascadeSelectProps) {
+export function XCascadeSelect({value, onChange, options, placeholder, title, children}: XCascadeSelectProps) {
+  const theme = useXTheme();
+  const {t} = useXLocale();
+  const resolvedPlaceholder = placeholder ?? t('pleaseSelect');
+  const resolvedTitle = title ?? t('pleaseSelect');
   const [visible, setVisible] = useState(false);
   /** 面板内的临时路径，确定时才回传 */
   const [draft, setDraft] = useState<any[]>([]);
@@ -116,25 +121,25 @@ export function XCascadeSelect({value, onChange, options, placeholder = '请选�
       {children ? (
         <Pressable onPress={() => setVisible(true)}>{children}</Pressable>
       ) : (
-        <Pressable style={styles.trigger} onPress={() => setVisible(true)}>
-          <Text style={[styles.triggerText, !display && styles.placeholder]} allowFontScaling={false}>
-            {display || placeholder}
+        <Pressable style={[styles.trigger, {borderColor: theme.colorBorder, backgroundColor: theme.colorBgLayout}]} onPress={() => setVisible(true)}>
+            <Text style={[styles.triggerText, {color: display ? theme.colorText : theme.colorTextQuaternary}]} allowFontScaling={false}>
+            {display || resolvedPlaceholder}
           </Text>
-          <AntDesign name='right' size={16} color='#bbb' />
+          <AntDesign name='right' size={16} color={theme.colorTextTertiary} />
         </Pressable>
       )}
 
       {/* 级联面板 */}
       <XPullView visible={visible} onClose={() => setVisible(false)} side='bottom' duration={200}>
-        <View style={styles.panel}>
+        <View style={[styles.panel, {backgroundColor: theme.colorBgContainer}]}>
           {/* 头部：取消 | 标题 | 确定 */}
-          <View style={styles.header}>
+          <View style={[styles.header, {borderBottomColor: theme.colorSplit}]}>
             <Pressable onPress={() => setVisible(false)} hitSlop={8}>
-              <Text style={styles.headerBtn}>取消</Text>
+              <Text style={[styles.headerBtn, {color: theme.colorTextSecondary}]}>{t('cancel')}</Text>
             </Pressable>
-            <Text style={styles.headerTitle}>{title}</Text>
+            <Text style={[styles.headerTitle, {color: theme.colorText}]}>{resolvedTitle}</Text>
             <Pressable onPress={handleConfirm} hitSlop={8} disabled={!complete}>
-              <Text style={[styles.headerBtn, styles.confirmBtn, !complete && styles.confirmDisabled]}>确定</Text>
+              <Text style={[styles.headerBtn, styles.confirmBtn, {color: !complete ? theme.colorTextQuaternary : theme.colorPrimary}]}>{t('confirm')}</Text>
             </Pressable>
           </View>
           {/* 多列滚轮：列数随路径深度动态增减 */}
@@ -164,24 +169,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: '#fafafa',
     minHeight: 40,
   },
   triggerText: {
     flex: 1,
     fontSize: 15,
-    color: '#333',
     marginRight: 8,
   },
-  placeholder: {
-    color: xTheme.colorTextQuaternary,
-  },
   panel: {
-    backgroundColor: '#fff',
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     paddingBottom: 20,
@@ -193,24 +191,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: 48,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#f0f0f0',
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
   },
   headerBtn: {
     fontSize: 15,
-    color: '#666',
     paddingHorizontal: 4,
   },
   confirmBtn: {
-    color: xTheme.colorPrimary,
     fontWeight: '600',
-  },
-  confirmDisabled: {
-    color: xTheme.colorTextQuaternary,
   },
   wheelRow: {
     flexDirection: 'row',

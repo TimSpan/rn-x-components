@@ -22,7 +22,7 @@ import {Animated, StyleSheet, View, StyleProp, TextStyle, ViewStyle, Text} from 
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, {Circle, Circle as SvgCircle, Defs, LinearGradient as SvgLinearGradient, Path, Stop} from 'react-native-svg';
 
-import {xTheme} from '../theme';
+import {useXTheme, xTheme} from '../theme';
 
 export interface XProgressProps {
   type?: 'line' | 'circle' | 'dashboard';
@@ -103,8 +103,9 @@ export function XProgress({
   style,
   testID,
 }: XProgressProps) {
+  const t = useXTheme();
   // 状态色：exception 红 / success 绿 / 其余主色（active 视同 normal）
-  const semanticColor = status === 'exception' ? xTheme.colorError : status === 'success' ? xTheme.colorSuccess : xTheme.colorPrimary;
+  const semanticColor = status === 'exception' ? t.colorError : status === 'success' ? t.colorSuccess : t.colorPrimary;
 
   const gradient = normalizeGradient(strokeColor);
   // antd 规则：渐变模式下状态色不覆盖（strokeColor 优先级高于 status）
@@ -114,7 +115,7 @@ export function XProgress({
   // 视觉封顶 100（文案仍显示真实值）
   const clamped = Math.min(Math.max(percent, 0), 100);
   const successPercent = success?.percent ? Math.min(Math.max(success.percent, 0), 100) : 0;
-  const successColor = success?.strokeColor ?? xTheme.colorSuccess;
+  const successColor = success?.strokeColor ?? t.colorSuccess;
 
   if (type === 'line') {
     return (
@@ -193,6 +194,7 @@ interface XLineProgressProps {
 }
 
 function XLineProgress(props: XLineProgressProps) {
+  const t = useXTheme();
   const {percent, percentRaw, successPercent, successColor, color, gradient, trailColor, strokeWidth, showInfo, format, status, style, testID} =
     props;
   const animated = useAnimatedPercent(percent);
@@ -203,7 +205,11 @@ function XLineProgress(props: XLineProgressProps) {
    */
   const barStyle = {width: `${Math.max(animated, 0)}%` as const};
 
-  const info = renderInfo(showInfo, format, percentRaw, [styles.lineInfo, status === 'exception' && {color: xTheme.colorError}]);
+  const info = renderInfo(showInfo, format, percentRaw, [
+    styles.lineInfo,
+    {color: t.colorTextSecondary},
+    status === 'exception' && {color: t.colorError},
+  ]);
 
   return (
     <View testID={testID} style={[styles.lineRow, style]}>
@@ -213,7 +219,7 @@ function XLineProgress(props: XLineProgressProps) {
           {
             height: strokeWidth,
             borderRadius: strokeWidth / 2,
-            backgroundColor: trailColor ?? xTheme.colorProgressTrack,
+            backgroundColor: trailColor ?? t.colorProgressTrack,
           },
         ]}
       >
@@ -256,6 +262,7 @@ interface XCircleProgressProps {
 }
 
 function XCircleProgress(props: XCircleProgressProps) {
+  const t = useXTheme();
   const {variant, percent, percentRaw, color, gradient, trailColor, strokeWidth, size, showInfo, format, status, style, testID} = props;
   const animated = useAnimatedPercent(percent);
   const gradientId = `xprog-${useId().replace(/[^a-zA-Z0-9-]/g, '')}`;
@@ -279,7 +286,7 @@ function XCircleProgress(props: XCircleProgressProps) {
   // 满圈/成功 → ✓；异常 → ✕（antd 同款行为；SVG Path 绘制，几何上绝对居中）
   const showDone = status === 'success' || (percent >= 100 && status !== 'exception');
   const showException = status === 'exception';
-  const badgeColor = showDone ? xTheme.colorSuccess : xTheme.colorError;
+  const badgeColor = showDone ? t.colorSuccess : t.colorError;
 
   return (
     <View testID={testID} style={[{width: size, height: size, alignItems: 'center', justifyContent: 'center'}, style]}>
@@ -297,7 +304,7 @@ function XCircleProgress(props: XCircleProgressProps) {
           cx={size / 2}
           cy={size / 2}
           r={r}
-          stroke={trailColor ?? xTheme.colorProgressTrack}
+          stroke={trailColor ?? t.colorProgressTrack}
           strokeWidth={strokeWidth}
           fill='none'
           strokeDasharray={`${arcLength} ${c - arcLength}`}
@@ -329,7 +336,7 @@ function XCircleProgress(props: XCircleProgressProps) {
               <Path d='M14.5 14.5 L25.5 25.5 M25.5 14.5 L14.5 25.5' stroke={badgeColor} strokeWidth={3} fill='none' strokeLinecap='round' />
             </Svg>
           ) : (
-            <View style={styles.circleInfo}>{renderInfo(true, format, percentRaw, styles.circleInfoText)}</View>
+            <View style={styles.circleInfo}>{renderInfo(true, format, percentRaw, [styles.circleInfoText, {color: t.colorText}])}</View>
           )}
         </View>
       )}
@@ -355,7 +362,6 @@ const styles = StyleSheet.create({
   },
   lineInfo: {
     fontSize: xTheme.fontSize,
-    color: xTheme.colorTextSecondary,
     marginLeft: 8,
     minWidth: 40,
     textAlign: 'right',
@@ -378,7 +384,6 @@ const styles = StyleSheet.create({
   },
   circleInfoText: {
     fontSize: xTheme.fontSizeLG,
-    color: xTheme.colorText,
     fontWeight: '600',
   },
 });

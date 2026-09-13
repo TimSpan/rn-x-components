@@ -39,14 +39,11 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {XPullView} from '../XPullView';
 import {XWheel, XWheelHandle, XWheelOption} from '../XWheel';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 
 // 按格式解析字符串值需要 customParseFormat 插件（antd 同款方案）
 dayjs.extend(customParseFormat);
-
-/** 主题色（antd primary） */
-const PRIMARY = '#2080F0';
-/** 面板背景色（antd --adm-color-background） */
-const BG_COLOR = '#fff';
 
 /** 默认 format：年月日 */
 const DEFAULT_FORMAT = 'YYYY-MM-DD';
@@ -162,7 +159,49 @@ export function XPickerDate({
   minYear = 1970,
   maxYear = 2100,
 }: XPickerDateProps) {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
   const insets = useSafeAreaInsets();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        panel: {
+          backgroundColor: t.colorBgContainer,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          overflow: 'hidden',
+        },
+        toolbar: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          height: 48,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: t.colorSplit,
+        },
+        cancelBtn: {
+          fontSize: 15,
+        },
+        title: {
+          fontSize: 16,
+          fontWeight: '600',
+          flex: 1,
+          textAlign: 'center',
+          marginHorizontal: 8,
+        },
+        confirmBtn: {
+          fontSize: 15,
+          fontWeight: '600',
+        },
+        /** 各列平分（antd: column flex:1） */
+        columns: {
+          flexDirection: 'row',
+        },
+      }),
+    [t],
+  );
   /** format 优先；未传时按旧 mode 兜底，保持向后兼容 */
   const resolvedFormat = format ?? (mode === 'time' ? 'HH:mm:ss' : DEFAULT_FORMAT);
   /** format 决定的列集合（固定顺序） */
@@ -267,13 +306,13 @@ export function XPickerDate({
         {/* 工具栏（与 XPicker 一致） */}
         <View style={styles.toolbar}>
           <Pressable onPress={onClose} hitSlop={8}>
-            <Text style={styles.cancelBtn}>取消</Text>
+            <Text style={[styles.cancelBtn, {color: t.colorTextSecondary}]}>{i18n('cancel')}</Text>
           </Pressable>
-          <Text style={styles.title} numberOfLines={1}>
-            {title ?? (hasDate && hasTime ? '请选择日期时间' : hasTime ? '请选择时间' : '请选择日期')}
+          <Text style={[styles.title, {color: t.colorText}]} numberOfLines={1}>
+            {title ?? (hasDate && hasTime ? i18n('selectDateTime') : hasTime ? i18n('selectTime') : i18n('selectDate'))}
           </Text>
           <Pressable onPress={handleConfirm} hitSlop={8}>
-            <Text style={styles.confirmBtn}>确定</Text>
+            <Text style={[styles.confirmBtn, {color: t.colorPrimary}]}>{i18n('confirm')}</Text>
           </Pressable>
         </View>
         {/* 滚轮列：format 里有哪些单位就有哪些列 */}
@@ -294,42 +333,3 @@ export function XPickerDate({
     </XPullView>
   );
 }
-
-const styles = StyleSheet.create({
-  panel: {
-    backgroundColor: BG_COLOR,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    overflow: 'hidden',
-  },
-  toolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    height: 48,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#eee',
-  },
-  cancelBtn: {
-    fontSize: 15,
-    color: '#666',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    flex: 1,
-    textAlign: 'center',
-    marginHorizontal: 8,
-  },
-  confirmBtn: {
-    fontSize: 15,
-    color: PRIMARY,
-    fontWeight: '600',
-  },
-  /** 各列平分（antd: column flex:1） */
-  columns: {
-    flexDirection: 'row',
-  },
-});

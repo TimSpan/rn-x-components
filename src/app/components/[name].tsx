@@ -17,10 +17,27 @@ export default function ComponentDetail() {
   }
 
   const Demo = meta.component;
+  const Wrapper = meta.noScroll ? DemoNoScroll : DemoScroll;
   return (
     <>
       <Stack.Screen options={{ title: meta.title }} />
-      <Demo />
+      <Wrapper>
+        <Demo />
+      </Wrapper>
     </>
   );
+}
+
+/** 包裹 ScrollView 的常规详情容器 */
+function DemoScroll({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: '#F5F6F8' }}>
+      {children}
+    </View>
+  );
+}
+
+/** 跳过 ScrollView：避免与 SectionList 等虚拟化列表嵌套告警 */
+function DemoNoScroll({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

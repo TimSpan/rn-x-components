@@ -1,0 +1,24 @@
+<!--
+  X-Components 官方品牌图标（SVG 矢量版）
+  与 assets/icons/x-icon-1024.png 同源几何：白色圆头 X + 品牌蓝对角渐变圆角方底
+  使用：<img src="x-logo.svg" /> / import xLogo from '@/assets/icons/x-logo.svg'
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- 品牌蓝对角渐变（#4AA6FF → #0E6FD8，主色 #2080F0 居中区间） -->
+    <linearGradient id="xBrand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4AA6FF"/>
+      <stop offset="0.5" stop-color="#2080F0"/>
+      <stop offset="1" stop-color="#0E6FD8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 圆角方底（radius ≈ 22.4%，iOS 风格） -->
+  <rect x="0" y="0" width="1024" height="1024" rx="229" fill="url(#xBrand)"/>
+
+  <!-- X 字标：两根圆头斜棒（stroke-width 158.7 ≈ 15.5%，端点 round） -->
+  <g stroke="#FFFFFF" stroke-width="158.7" stroke-linecap="round" fill="none">
+    <line x1="322" y1="322" x2="702" y2="702"/>
+    <line x1="702" y1="322" x2="322" y2="702"/>
+  </g>
+</svg>

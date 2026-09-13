@@ -9,6 +9,7 @@
 import React, {useState} from 'react';
 import {XPickerDate} from '../../XPickerDate';
 import {FieldTrigger} from './FieldTrigger';
+import {useXLocale} from '../../XLocale';
 
 export interface XDateFieldProps {
   value?: string;
@@ -23,13 +24,14 @@ export interface XDateFieldProps {
 }
 
 export function XDateField({value, onChange, format, placeholder, title, minYear, maxYear, disabled}: XDateFieldProps) {
+  const {t} = useXLocale();
   const [visible, setVisible] = useState(false);
 
   return (
     <>
       <FieldTrigger
         text={value}
-        placeholder={placeholder ?? '请选择日期'}
+        placeholder={placeholder ?? t('selectDate')}
         disabled={disabled}
         onPress={() => setVisible(true)}
       />
@@ -37,7 +39,7 @@ export function XDateField({value, onChange, format, placeholder, title, minYear
         visible={visible}
         onClose={() => setVisible(false)}
         value={value}
-        title={title ?? '请选择日期'}
+        title={title ?? t('selectDate')}
         format={format}
         minYear={minYear}
         maxYear={maxYear}

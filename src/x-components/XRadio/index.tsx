@@ -19,7 +19,7 @@
 import React, {createContext, useContext, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, View, StyleProp, ViewStyle, TextStyle, Text} from 'react-native';
 
-import {xTheme} from '../theme';
+import {useXTheme, xTheme} from '../theme';
 
 /** antd Radio 的 onChange 事件对象的 RN 等价物 */
 export interface XRadioChangeEvent {
@@ -67,6 +67,7 @@ export interface XRadioProps {
 }
 
 export function XRadio({value, checked, defaultChecked, disabled, onChange, children, style, textStyle, testID}: XRadioProps) {
+  const t = useXTheme();
   const group = useContext(RadioGroupContext);
   const [innerChecked, setInnerChecked] = useState(!!defaultChecked);
 
@@ -93,7 +94,7 @@ export function XRadio({value, checked, defaultChecked, disabled, onChange, chil
     >
       <XRadioIndicator checked={isChecked} disabled={isDisabled} />
       {children != null && (
-        <Text style={[styles.radioLabel, isDisabled && styles.labelDisabled, textStyle]} allowFontScaling={false}>
+        <Text style={[styles.radioLabel, {color: isDisabled ? t.colorTextQuaternary : t.colorText}, textStyle]} allowFontScaling={false}>
           {children}
         </Text>
       )}
@@ -103,10 +104,11 @@ export function XRadio({value, checked, defaultChecked, disabled, onChange, chil
 
 /** 圆点指示器：外圈 20 + 选中内点 10，颜色随状态 */
 function XRadioIndicator({checked, disabled}: {checked: boolean; disabled: boolean}) {
-  const ringColor = disabled ? xTheme.colorBorder : checked ? xTheme.colorPrimary : xTheme.colorBorder;
+  const t = useXTheme();
+  const ringColor = disabled ? t.colorBorder : checked ? t.colorPrimary : t.colorBorder;
   return (
     <View style={[styles.radioRing, {borderColor: ringColor}]}>
-      {checked && <View style={[styles.radioDot, {backgroundColor: disabled ? xTheme.colorTextQuaternary : xTheme.colorPrimary}]} />}
+      {checked && <View style={[styles.radioDot, {backgroundColor: disabled ? t.colorTextQuaternary : t.colorPrimary}]} />}
     </View>
   );
 }
@@ -125,6 +127,7 @@ export interface XRadioButtonProps {
 }
 
 export function XRadioButton({value, disabled, checked, onChange, children, style, testID}: XRadioButtonProps) {
+  const t = useXTheme();
   const group = useContext(RadioGroupContext);
   const isChecked = group ? group.value === value : !!checked;
   const isDisabled = disabled || (group?.disabled ?? false);
@@ -141,9 +144,9 @@ export function XRadioButton({value, disabled, checked, onChange, children, styl
 
   // outline：选中=主色描边+主色字；solid：选中=主色实底+白字
   const selected = buttonStyle === 'solid';
-  const bg = isDisabled ? xTheme.colorBgContainerDisabled : isChecked && selected ? xTheme.colorPrimary : xTheme.colorBgContainer;
-  const textColor = isDisabled ? xTheme.colorTextQuaternary : isChecked ? (selected ? '#fff' : xTheme.colorPrimary) : xTheme.colorTextSecondary;
-  const borderColor = isDisabled ? xTheme.colorBorder : isChecked ? xTheme.colorPrimary : xTheme.colorBorder;
+  const bg = isDisabled ? t.colorBgContainerDisabled : isChecked && selected ? t.colorPrimary : t.colorBgContainer;
+  const textColor = isDisabled ? t.colorTextQuaternary : isChecked ? (selected ? t.colorTextLightSolid : t.colorPrimary) : t.colorTextSecondary;
+  const borderColor = isDisabled ? t.colorBorder : isChecked ? t.colorPrimary : t.colorBorder;
 
   return (
     <Pressable
@@ -248,13 +251,14 @@ function GroupButton({
   solid: boolean;
   onPress: () => void;
 }) {
+  const t = useXTheme();
   const isFirst = idx === 0;
   const isLast = idx === total - 1;
   const radius = xTheme.borderRadius;
 
-  const bg = disabled ? xTheme.colorBgContainerDisabled : checked && solid ? xTheme.colorPrimary : xTheme.colorBgContainer;
-  const textColor = disabled ? xTheme.colorTextQuaternary : checked ? (solid ? '#fff' : xTheme.colorPrimary) : xTheme.colorTextSecondary;
-  const borderColor = disabled ? xTheme.colorBorder : checked ? xTheme.colorPrimary : xTheme.colorBorder;
+  const bg = disabled ? t.colorBgContainerDisabled : checked && solid ? t.colorPrimary : t.colorBgContainer;
+  const textColor = disabled ? t.colorTextQuaternary : checked ? (solid ? t.colorTextLightSolid : t.colorPrimary) : t.colorTextSecondary;
+  const borderColor = disabled ? t.colorBorder : checked ? t.colorPrimary : t.colorBorder;
 
   return (
     <Pressable
@@ -313,11 +317,7 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     fontSize: xTheme.fontSize,
-    color: xTheme.colorText,
     marginLeft: 8,
-  },
-  labelDisabled: {
-    color: xTheme.colorTextQuaternary,
   },
   buttonBase: {
     height: xTheme.controlHeight,

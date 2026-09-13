@@ -19,10 +19,12 @@
  * ============================================================================
  */
 
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Pressable, StyleSheet, View, ViewStyle, StyleProp, Text} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {XPullView} from '../XPullView';
+import {useXTheme} from '../theme';
+import {useXLocale} from '../XLocale';
 
 /** 菜单选项 */
 export interface XActionSheetOption<T = any> {
@@ -54,18 +56,86 @@ export function XActionSheet<T = any>({
   onClose,
   options,
   title,
-  cancelText = '取消',
+  cancelText,
   duration = 200,
   onSelect,
   style,
 }: XActionSheetProps<T>) {
+  const t = useXTheme();
+  const {t: i18n} = useXLocale();
+  const resolvedCancel = cancelText ?? i18n('cancel');
   const insets = useSafeAreaInsets();
 
-  /** 点选项：先关闭弹层，再通知业务方选中了谁 */
+  /** style sheet 置于组件内，按主题对象 t 构造（color 字段需跟随暗黑模式） */
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        /** 面板整体：浅灰底 + 圆角，顶部裁圆角 */
+        panel: {
+          backgroundColor: t.colorBgLayout,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          overflow: 'hidden',
+        },
+        header: {
+          paddingVertical: 14,
+          backgroundColor: t.colorBgContainer,
+        },
+        title: {
+          textAlign: 'center',
+          fontSize: 13,
+          color: t.colorTextTertiary,
+        },
+        /** 选项区：白底，每个选项之间用 hairline 细线分隔 */
+        optionList: {
+          backgroundColor: t.colorBgContainer,
+        },
+        option: {
+          height: 52,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: t.colorSplit,
+        },
+        /** 按压反馈底色 */
+        pressed: {
+          backgroundColor: t.colorBgLayout,
+        },
+        optionText: {
+          fontSize: 16,
+          color: t.colorText,
+        },
+        dangerText: {
+          color: t.colorError,
+        },
+        disabledText: {
+          color: t.colorTextQuaternary,
+        },
+        cancelGap: {
+          height: 8,
+        },
+        cancel: {
+          height: 54,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: t.colorBgContainer,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+        },
+        cancelText: {
+          fontSize: 16,
+          color: t.colorTextSecondary,
+        },
+      }),
+    [t],
+  );
+
+  /** 点选项：先通知业务方选中了谁，再关弹层（顺序关键：命令式 show() 的
+   * Promise 依赖 onSelect 先 resolve，onClose 后触发时 resolve 已消费） */
   const handleSelect = useCallback(
     (option: XActionSheetOption<T>) => {
-      onClose();
       onSelect?.(option);
+      onClose();
     },
     [onClose, onSelect],
   );
@@ -98,68 +168,10 @@ export function XActionSheet<T = any>({
         <View style={styles.cancelGap} />
         {/* 取消按钮（单独一行） */}
         <Pressable onPress={onClose} style={({pressed}) => [styles.cancel, pressed && styles.pressed]}>
-          <Text style={styles.cancelText}>{cancelText}</Text>
+          <Text style={styles.cancelText}>{resolvedCancel}</Text>
         </Pressable>
       </View>
     </XPullView>
   );
 }
 
-const styles = StyleSheet.create({
-  /** 面板整体：浅灰底 + 圆角，顶部裁圆角 */
-  panel: {
-    backgroundColor: '#f5f6f8',
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    overflow: 'hidden',
-  },
-  header: {
-    paddingVertical: 14,
-    backgroundColor: '#fff',
-  },
-  title: {
-    textAlign: 'center',
-    fontSize: 13,
-    color: '#999',
-  },
-  /** 选项区：白底，每个选项之间用 hairline 细线分隔 */
-  optionList: {
-    backgroundColor: '#fff',
-  },
-  option: {
-    height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#eee',
-  },
-  /** 按压反馈底色 */
-  pressed: {
-    backgroundColor: '#f5f5f5',
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  dangerText: {
-    color: '#f5222d',
-  },
-  disabledText: {
-    color: '#c0c0c0',
-  },
-  cancelGap: {
-    height: 8,
-  },
-  cancel: {
-    height: 54,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  cancelText: {
-    fontSize: 16,
-    color: '#666',
-  },
-});

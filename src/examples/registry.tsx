@@ -20,11 +20,31 @@ import {
   XAnimatedViewDemo,
 } from './popups';
 import { XToastDemo, XLoadingModalDemo, XImagePreviewDemo, XAnimatedSearchPanelDemo } from './providers';
+import {
+  XThemeConfigDemo,
+  XCarouselDemo,
+  XTabsDemo,
+  XElevatorDemo,
+  XDropdownMenuDemo,
+  XCalendarDemo,
+  XRecordDemo,
+  XNumberKeyboardDemo,
+  XLicensePlateDemo,
+  XChartDemo,
+  XSignatureDemo,
+  XUploadDemo,
+} from './advanced';
 
 export interface CompMeta {
   title: string;
   description: string;
   component: React.ComponentType;
+  /**
+   * true 时详情页跳过外层 ScrollView，避免与 SectionList 等虚拟化列表
+   * 嵌套导致 "VirtualizedLists should never be nested" 告警。
+   * 适用于内部已含 VirtualizedList 的组件（XElevator 等）。
+   */
+  noScroll?: boolean;
 }
 
 export const REGISTRY: Record<string, CompMeta> = {
@@ -60,6 +80,27 @@ export const REGISTRY: Record<string, CompMeta> = {
 
   // 复合组件
   XAnimatedSearchPanel: { title: 'XAnimatedSearchPanel 搜索面板', description: '列表头可折叠搜索面板，单 progress 驱动', component: XAnimatedSearchPanelDemo },
+
+  // 主题与国际化（新基建）
+  XThemeConfig: { title: 'XTheme 主题与国际化', description: '暗黑模式切换（含存量组件）、中英文切换', component: XThemeConfigDemo },
+
+  // 交互组件（v2 新增）
+  XCarousel: { title: 'XCarousel 轮播图', description: '自动播放/无限循环/指示点，参照 duxui Swiper', component: XCarouselDemo },
+  XTabs: { title: 'XTabs 选项卡', description: 'line/button、滑动联动、懒加载、徽标', component: XTabsDemo },
+  XElevator: { title: 'XElevator 电梯楼层', description: '右侧导航+分组吸顶，参照 duxui Elevator', component: XElevatorDemo, noScroll: true },
+  XDropdownMenu: { title: 'XDropdownMenu 下拉菜单', description: '基于 XTopView 宿主，遮罩+快照+下拉动画', component: XDropdownMenuDemo },
+  XNumberKeyboard: { title: 'XNumberKeyboard 数字键盘', description: '弹出模式为主，乱序/小数点/退格', component: XNumberKeyboardDemo },
+  XLicensePlate: { title: 'XLicensePlate 车牌输入', description: '省份→字母→数字三段键盘，新能源末位 D/F', component: XLicensePlateDemo },
+
+  // 选择与媒体（v2 新增）
+  XCalendar: { title: 'XCalendar 日历', description: '单选/周选/范围/多选，duxui 逻辑重写', component: XCalendarDemo },
+  XCalendarPopup: { title: 'XCalendarPopup 弹窗日历', description: '底部弹出，取消/确定工具栏对齐时间选择器', component: XCalendarDemo },
+  XRecord: { title: 'XRecord 录音', description: 'expo-audio 驱动，试听/重录/使用', component: XRecordDemo },
+  XChart: { title: 'XChart 图表', description: 'SVG 自研：折线/柱状/环形，主题自适应', component: XChartDemo },
+  XSignature: { title: 'XSignature 普通签名', description: '单画布连笔签名，导出 base64', component: XSignatureDemo },
+  XSignatureSkia: { title: 'XSignatureSkia 逐字签名', description: 'Skia 高性能逐字签名（changhu 迁移版）', component: XSignatureDemo },
+  XUploadImage: { title: 'XUploadImage 图片上传', description: '适配器驱动：Mock/MinIO 预签名直传', component: XUploadDemo },
+  XUploadVideo: { title: 'XUploadVideo 视频上传', description: '单个视频，适配器驱动', component: XUploadDemo },
 };
 
 export function getComponentMeta(name: string): CompMeta | undefined {

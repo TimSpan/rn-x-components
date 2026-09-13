@@ -1,31 +1,55 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ThemeControls } from "@/x-components";
 
 const PRIMARY = "#2080F0";
 const COMPONENTS: { name: string; desc: string }[] = [
-  { name: "XButton", desc: "按钮" },
-  { name: "XDivider", desc: "分割线" },
-  { name: "XInput", desc: "输入框" },
-  { name: "XTag", desc: "标签" },
-  { name: "XProgress", desc: "进度条" },
-  { name: "XRadio", desc: "单选框" },
-  { name: "XCheckbox", desc: "多选框" },
-  { name: "XForm", desc: "表单" },
-  { name: "XFormPro", desc: "低代码表单" },
-  { name: "XCascadeSelect", desc: "级联选择" },
-  { name: "XMultiSelect", desc: "多选选择器" },
-  { name: "XPullView", desc: "弹出层" },
-  { name: "XActionSheet", desc: "底部菜单" },
-  { name: "XPicker", desc: "滚轮选择器" },
-  { name: "XPickerDate", desc: "日期选择" },
-  { name: "XModalForm", desc: "居中弹层" },
-  { name: "XConfirmForm", desc: "确认框" },
-  { name: "XAnimatedView", desc: "动画引擎" },
-  { name: "XToast", desc: "轻提示" },
-  { name: "XLoadingModal", desc: "全局加载" },
-  { name: "XImagePreview", desc: "图片预览" },
-  { name: "XAnimatedSearchPanel", desc: "搜索面板" },
-  { name: "XImage", desc: "图片" },
+  // 基础
+  {name: "XButton", desc: "按钮"},
+  {name: "XDivider", desc: "分割线"},
+  {name: "XInput", desc: "输入框"},
+  {name: "XTag", desc: "标签"},
+  {name: "XProgress", desc: "进度条"},
+  {name: "XRadio", desc: "单选框"},
+  {name: "XCheckbox", desc: "多选框"},
+  // 表单
+  {name: "XForm", desc: "表单"},
+  {name: "XFormPro", desc: "低代码表单"},
+  {name: "XCascadeSelect", desc: "级联选择"},
+  {name: "XMultiSelect", desc: "多选选择器"},
+  // 弹层
+  {name: "XPullView", desc: "弹出层"},
+  {name: "XActionSheet", desc: "底部菜单"},
+  {name: "XPicker", desc: "滚轮选择器"},
+  {name: "XPickerDate", desc: "日期选择"},
+  {name: "XModalForm", desc: "居中弹层"},
+  {name: "XConfirmForm", desc: "确认框"},
+  {name: "XAnimatedView", desc: "动画引擎"},
+  // 全局命令式
+  {name: "XToast", desc: "轻提示"},
+  {name: "XLoadingModal", desc: "全局加载"},
+  {name: "XImagePreview", desc: "图片预览"},
+  // 复合
+  {name: "XAnimatedSearchPanel", desc: "搜索面板"},
+  {name: "XImage", desc: "图片"},
+  // v2 新增：交互
+  {name: "XCarousel", desc: "轮播图"},
+  {name: "XTabs", desc: "选项卡"},
+  {name: "XDropdownMenu", desc: "下拉菜单"},
+  {name: "XElevator", desc: "电梯楼层"},
+  {name: "XNumberKeyboard", desc: "数字键盘"},
+  {name: "XLicensePlate", desc: "车牌输入"},
+  // v2 新增：媒体
+  {name: "XCalendar", desc: "日历"},
+  {name: "XCalendarPopup", desc: "弹窗日历"},
+  {name: "XRecord", desc: "录音"},
+  {name: "XSignature", desc: "普通签名"},
+  {name: "XSignatureSkia", desc: "Skia 逐字签名"},
+  {name: "XUploadImage", desc: "图片上传"},
+  {name: "XUploadVideo", desc: "视频上传"},
+  {name: "XVideoPreview", desc: "视频预览"},
+  // v2 新增：数据
+  {name: "XChart", desc: "折线/柱状/饼图"},
 ];
 
 export default function IntroScreen() {
@@ -35,9 +59,15 @@ export default function IntroScreen() {
       style={styles.container}
       contentContainerStyle={{ paddingTop: insets.top, paddingBottom: 80 }}
     >
+      {/* 顶部主题切换 */}
+      <View style={styles.topBar}>
+        <Text style={styles.topTitle}>个性化</Text>
+        <ThemeControls />
+      </View>
+
       {/* Hero */}
       <View style={styles.hero}>
-        <View style={styles.logoBox}>
+        <View style={[styles.logoBox, {backgroundColor: PRIMARY}]}>
           <Text style={styles.logoText}>X</Text>
         </View>
         <Text style={styles.heroTitle}>X-Components</Text>
@@ -194,14 +224,24 @@ export default function IntroScreen() {
         </View>
       </View>
 
-      {/* npm 计划 */}
+      {/* npm 已发布 */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>npm 发布计划</Text>
+        <Text style={styles.cardTitle}>已发布到 npm 🎉</Text>
         <Text style={styles.paragraph}>
-          本组件库计划发布到 npm，包名：
+          包名：
           <Text style={styles.code}> react-native-x-components</Text>
+          {"\n"}最新版本：
+          <Text style={styles.code}>0.1.0</Text>
+          {"\n"}安装：
+          <Text style={styles.code}>npm install react-native-x-components</Text>
           {"\n"}
-          安装后即可在任何 React Native 项目中使用，敬请期待。
+          {"\n"}主页：
+          <Text
+            style={[styles.code, {textDecorationLine: 'underline'}]}
+            onPress={() => Linking.openURL('https://www.npmjs.com/package/react-native-x-components')}
+          >
+            https://www.npmjs.com/package/react-native-x-components
+          </Text>
         </Text>
       </View>
 
@@ -216,6 +256,14 @@ export default function IntroScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#F5F6F8" },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  topTitle: { fontSize: 13, color: 'rgba(0,0,0,0.45)', fontWeight: '600' },
   hero: { alignItems: "center", paddingVertical: 40 },
   logoBox: {
     width: 80,

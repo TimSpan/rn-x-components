@@ -33,6 +33,7 @@ import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useMemo,
 import XForm from '../XForm';
 import {deepClone} from '../XForm/utils';
 import {renderXFormField} from './renderers';
+import {useXLocale} from '../XLocale';
 import type {XFormProInst, XFormProItemProps, XFormProProps, XFormItemOptions} from './types';
 
 export type {XFormModelValue, XOptionItem, XFormProRule, XBaseFormItemProps, XFormProItemProps, XFormItemOptions, XFormProProps, XFormProInst, XFm} from './types';
@@ -57,6 +58,7 @@ function XFormProInner<ModelValue extends Record<string, any>>(
   ref: React.Ref<XFormProInst<ModelValue>>,
 ) {
   const {value, onUpdateValue, labelWidth, layout = 'vertical', formItemOptions, hiddenValues} = props;
+  const {t} = useXLocale();
 
   const [form] = XForm.useForm();
   /** 用户输入产生的值变化（外部 value 同步不回声） */
@@ -70,7 +72,7 @@ function XFormProInner<ModelValue extends Record<string, any>>(
       const entry = raw as XFormProItemProps<ModelValue, any> & {path?: string};
       entry.path = key;
       if (entry.required && !entry.rules && !entry.rule) {
-        entry.rules = [{required: true, message: `${entry.label ?? key}不能为空`}];
+        entry.rules = [{required: true, message: `${entry.label ?? key}${t('cannotBeEmpty')}`}];
       }
     }
     return cloned;
@@ -131,7 +133,7 @@ function XFormProInner<ModelValue extends Record<string, any>>(
             // XInput 走 RN 原生 onChangeText 值回调，其余控件都是 onChange
             trigger={entry.type === 'input' ? 'onChangeText' : 'onChange'}
           >
-            {renderXFormField(entry, form)}
+            {renderXFormField(entry, form, t)}
           </XForm.Item>
         );
       })}
