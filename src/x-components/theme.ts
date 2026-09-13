@@ -184,28 +184,35 @@ export function useXThemeMode(): XThemeMode {
 /**
  * 【核心 Hook】当前模式下的完整 token 集。
  *
- * - 返回值是模块级常量对象（lightTokens / darkTokens），
- *   引用稳定、不会触发无谓重渲染；模式切换时组件自然重渲染取到新对象；
- * - 解析规则：mode==='system' 时跟随 useColorScheme()，
- *   否则用强制值（未挂 Provider 也能工作，状态全局单例）；
+ * - 返回值按 (scheme × 品牌色) 缓存，**引用稳定**：同组合永远返回同一对象，
+ *   避免每次渲染新对象导致订阅组件级联重渲染（曾引发日历连点卡顿）；
+ * - mode==='system' 时跟随 useColorScheme()，否则用强制值；
  * - 注入运行时品牌色（zustand XBrand）覆盖 colorPrimary 等键。
  */
 import {useXBrandStore} from './XTheme/BrandColor';
+
+const themeCache = new Map<string, XTheme>();
 
 export function useXTheme(): XTheme {
   const mode = useXThemeModeStore(s => s.mode);
   const systemScheme = useColorScheme();
   const scheme: XThemeScheme = mode === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : mode;
   const brand = useXBrandStore(s => s.brand);
-  const base = scheme === 'dark' ? darkTokens : lightTokens;
-  return {
-    ...base,
-    colorPrimary: scheme === 'dark' ? brand.primaryDark : brand.primary,
-    colorPrimaryActive: scheme === 'dark' ? brand.primaryDark : brand.primary,
-    colorPrimaryBg: brand.primaryBg,
-    colorPrimaryDisabled:
-      scheme === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(32,128,240,0.28)',
-  };
+  const key = `${scheme}:${brand.name}`;
+  let cached = themeCache.get(key);
+  if (!cached) {
+    const base = scheme === 'dark' ? darkTokens : lightTokens;
+    cached = {
+      ...base,
+      colorPrimary: scheme === 'dark' ? brand.primaryDark : brand.primary,
+      colorPrimaryActive: scheme === 'dark' ? brand.primaryDark : brand.primary,
+      colorPrimaryBg: brand.primaryBg,
+      colorPrimaryDisabled:
+        scheme === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(32,128,240,0.28)',
+    };
+    themeCache.set(key, cached);
+  }
+  return cached;
 }
 
 /** 当前实际生效的明暗方案（isDark 便捷判断用） */

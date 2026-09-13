@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ThemeControls } from "@/x-components";
+import { ThemeControls, useXTheme } from "@/x-components";
 
 interface CompItem {
   name: string;
@@ -173,7 +173,6 @@ const GROUPS: CompGroup[] = [
       { name: "XCarousel", label: "XCarousel 轮播图", desc: "自动播放/无限循环/指示点" },
       { name: "XTabs", label: "XTabs 选项卡", desc: "line/button、滑动联动、懒加载" },
       { name: "XDropdownMenu", label: "XDropdownMenu 下拉菜单", desc: "基于 XTopView 宿主" },
-      { name: "XElevator", label: "XElevator 电梯楼层", desc: "右侧导航+分组吸顶" },
       { name: "XNumberKeyboard", label: "XNumberKeyboard 数字键盘", desc: "弹出模式为主，乱序/小数点" },
       { name: "XLicensePlate", label: "XLicensePlate 车牌输入", desc: "三段键盘，新能源末位 D/F" },
     ],
@@ -195,6 +194,7 @@ const GROUPS: CompGroup[] = [
 
 export default function ComponentsList() {
   const insets = useSafeAreaInsets();
+  const t = useXTheme();
 
   return (
     <>
@@ -209,24 +209,24 @@ export default function ComponentsList() {
         }}
       />
       <ScrollView
-        style={styles.container}
+        style={[styles.container, {backgroundColor: t.colorBgLayout}]}
         contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}
       >
         {GROUPS.map((group) => (
           <View key={group.title} style={styles.group}>
-            <Text style={styles.groupTitle}>{group.title}</Text>
+            <Text style={[styles.groupTitle, {color: t.colorTextTertiary}]}>{group.title}</Text>
             {group.items.map((item) => (
               <TouchableOpacity
                 key={item.name}
-                style={styles.item}
+                style={[styles.item, {backgroundColor: t.colorBgContainer, borderBottomColor: t.colorSplit}]}
                 activeOpacity={0.6}
                 onPress={() => router.push(`/components/${item.name}`)}
               >
                 <View style={styles.itemContent}>
-                  <Text style={styles.itemLabel}>{item.label}</Text>
-                  <Text style={styles.itemDesc}>{item.desc}</Text>
+                  <Text style={[styles.itemLabel, {color: t.colorText}]}>{item.label}</Text>
+                  <Text style={[styles.itemDesc, {color: t.colorTextTertiary}]}>{item.desc}</Text>
                 </View>
-                <Text style={styles.arrow}>›</Text>
+                <Text style={[styles.arrow, {color: t.colorTextQuaternary}]}>›</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -239,7 +239,6 @@ export default function ComponentsList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F6F8",
   },
   group: {
     marginBottom: 8,
@@ -247,18 +246,15 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontSize: 13,
     fontWeight: "600",
-    color: "rgba(0,0,0,0.45)",
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#F0F0F0",
   },
   itemContent: {
     flex: 1,
@@ -266,16 +262,13 @@ const styles = StyleSheet.create({
   itemLabel: {
     fontSize: 15,
     fontWeight: "500",
-    color: "rgba(0,0,0,0.88)",
   },
   itemDesc: {
     fontSize: 12,
-    color: "rgba(0,0,0,0.45)",
     marginTop: 3,
   },
   arrow: {
     fontSize: 22,
-    color: "rgba(0,0,0,0.25)",
     marginLeft: 8,
   },
 });

@@ -148,9 +148,7 @@ export type {XCarouselProps, XCarouselItem} from './XCarousel';
 
 export {XTabs, XTabPane} from './XTabs';
 export type {XTabsProps, XTabPaneProps} from './XTabs';
-
-export {XElevator} from './XElevator';
-export type {XElevatorProps, XElevatorSection} from './XElevator';
+// XElevator 已废弃（实现质量不达标，代码保留在 src/_deprecated/），不再导出/发布
 
 // ---------------------------------------------------------------------------
 // 下拉菜单

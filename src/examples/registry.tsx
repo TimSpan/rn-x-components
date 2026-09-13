@@ -24,7 +24,6 @@ import {
   XThemeConfigDemo,
   XCarouselDemo,
   XTabsDemo,
-  XElevatorDemo,
   XDropdownMenuDemo,
   XCalendarDemo,
   XRecordDemo,
@@ -87,7 +86,6 @@ export const REGISTRY: Record<string, CompMeta> = {
   // 交互组件（v2 新增）
   XCarousel: { title: 'XCarousel 轮播图', description: '自动播放/无限循环/指示点，参照 duxui Swiper', component: XCarouselDemo },
   XTabs: { title: 'XTabs 选项卡', description: 'line/button、滑动联动、懒加载、徽标', component: XTabsDemo },
-  XElevator: { title: 'XElevator 电梯楼层', description: '右侧导航+分组吸顶，参照 duxui Elevator', component: XElevatorDemo, noScroll: true },
   XDropdownMenu: { title: 'XDropdownMenu 下拉菜单', description: '基于 XTopView 宿主，遮罩+快照+下拉动画', component: XDropdownMenuDemo },
   XNumberKeyboard: { title: 'XNumberKeyboard 数字键盘', description: '弹出模式为主，乱序/小数点/退格', component: XNumberKeyboardDemo },
   XLicensePlate: { title: 'XLicensePlate 车牌输入', description: '省份→字母→数字三段键盘，新能源末位 D/F', component: XLicensePlateDemo },

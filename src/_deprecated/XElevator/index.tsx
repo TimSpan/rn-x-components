@@ -19,7 +19,7 @@
 
 import React, {useCallback, useRef, useState} from 'react';
 import {Pressable, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
-import {useXTheme} from '../theme';
+import {useXTheme} from '@/x-components/theme';
 
 export interface XElevatorSection<T = {name: string}> {
   /** 分组标题（吸顶显示） */

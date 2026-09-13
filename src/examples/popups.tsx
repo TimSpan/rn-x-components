@@ -11,6 +11,7 @@ import {
   XAnimatedView,
   anim,
   XInput,
+  useXTheme,
 } from '@/x-components';
 import { DemoPage, Section, Row } from './ui';
 
@@ -18,6 +19,7 @@ import { DemoPage, Section, Row } from './ui';
 // XPullView
 // ============================================================================
 export function XPullViewDemo() {
+  const t = useXTheme();
   const [visible, setVisible] = useState(false);
   const [sideVisible, setSideVisible] = useState(false);
   return (
@@ -29,9 +31,9 @@ export function XPullViewDemo() {
         <XButton type="primary" onPress={() => setSideVisible(true)}>弹出居中面板</XButton>
       </Section>
       <XPullView visible={visible} onClose={() => setVisible(false)} side="bottom">
-        <View style={styles.pullContent}>
-          <Text style={styles.pullTitle}>底部弹出面板</Text>
-          <Text style={styles.pullDesc}>
+        <View style={[styles.pullContent, {backgroundColor: t.colorBgContainer}]}>
+          <Text style={[styles.pullTitle, {color: t.colorText}]}>底部弹出面板</Text>
+          <Text style={[styles.pullDesc, {color: t.colorTextSecondary}]}>
             基于 TopView 实现的 PullView 弹层，比 RN Modal 拥有更快的弹出速度。{'\n'}
             动画在 UI 线程驱动，不依赖 JS 线程。
           </Text>
@@ -39,9 +41,9 @@ export function XPullViewDemo() {
         </View>
       </XPullView>
       <XPullView visible={sideVisible} onClose={() => setSideVisible(false)} side="center" duration={150}>
-        <View style={styles.centerContent}>
-          <Text style={styles.pullTitle}>居中弹出</Text>
-          <Text style={styles.pullDesc}>scale 0.85→1 + 淡入，150ms</Text>
+        <View style={[styles.centerContent, {backgroundColor: t.colorBgContainer}]}>
+          <Text style={[styles.pullTitle, {color: t.colorText}]}>居中弹出</Text>
+          <Text style={[styles.pullDesc, {color: t.colorTextSecondary}]}>scale 0.85→1 + 淡入，150ms</Text>
           <XButton type="primary" onPress={() => setSideVisible(false)}>确定</XButton>
         </View>
       </XPullView>
@@ -217,15 +219,13 @@ export function XAnimatedViewDemo() {
 
 const styles = StyleSheet.create({
   pullContent: {
-    backgroundColor: '#fff',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 20,
   },
-  pullTitle: { fontSize: 17, fontWeight: '600', color: 'rgba(0,0,0,0.88)', marginBottom: 8 },
-  pullDesc: { fontSize: 14, color: 'rgba(0,0,0,0.65)', lineHeight: 22, marginBottom: 16 },
+  pullTitle: { fontSize: 17, fontWeight: '600', marginBottom: 8 },
+  pullDesc: { fontSize: 14, lineHeight: 22, marginBottom: 16 },
   centerContent: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     width: 260,

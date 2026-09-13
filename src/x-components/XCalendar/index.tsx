@@ -201,7 +201,10 @@ export function XCalendar({
     [mode, multiple, currentValue, onChange, weekStartsOn, pendingStart, isDisabled],
   );
 
-  /** 单元格样式计算 */
+  /** 单元格样式计算
+   * 【scope 重新选择规则】已选完一个范围后再点击：pendingStart 存在时
+   * 优先渲染"新一轮起点"，忽略旧范围（否则样式纹丝不动，像卡死）。
+   * 渲染优先级：pendingStart（scope 新起点）> 旧范围 > day 选中 */
   const cellState = useCallback(
     (d: Dayjs): {selected: boolean; inRange: boolean; disabled: boolean; isToday: boolean} => {
       const key = d.format('YYYY-MM-DD');
@@ -210,14 +213,15 @@ export function XCalendar({
       let selected = false;
       let inRange = false;
 
-      if (mode === 'day') {
+      if (mode === 'scope' && pendingStart) {
+        // 新一轮选择中：只高亮起点，旧范围不再显示
+        selected = key === pendingStart.format('YYYY-MM-DD');
+      } else if (mode === 'day') {
         selected = multiple ? selectedSet.has(key) : key === selStart?.format('YYYY-MM-DD');
       } else if (selStart && selEnd) {
-        // week/scope：起止实心、中间浅底（week 模式每次选中天然成对）
+        // week/scope：起止实心、中间浅底
         selected = key === selStart.format('YYYY-MM-DD') || key === selEnd.format('YYYY-MM-DD');
         inRange = d.isAfter(selStart, 'day') && d.isBefore(selEnd, 'day');
-      } else if (mode === 'scope' && pendingStart) {
-        selected = key === pendingStart.format('YYYY-MM-DD');
       }
       return {selected, inRange, disabled, isToday};
     },

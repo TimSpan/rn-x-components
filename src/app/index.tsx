@@ -36,7 +36,6 @@ const COMPONENTS: { name: string; desc: string }[] = [
   {name: "XCarousel", desc: "轮播图"},
   {name: "XTabs", desc: "选项卡"},
   {name: "XDropdownMenu", desc: "下拉菜单"},
-  {name: "XElevator", desc: "电梯楼层"},
   {name: "XNumberKeyboard", desc: "数字键盘"},
   {name: "XLicensePlate", desc: "车牌输入"},
   // v2 新增：媒体

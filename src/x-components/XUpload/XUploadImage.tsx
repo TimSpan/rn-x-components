@@ -18,6 +18,7 @@ import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
 import {useXUploadAdapter} from './provider';
 import {showXActionSheet} from '../XActionSheet/global';
+import {XConfirmForm} from '../XConfirmForm';
 import {XImagePreviewService} from '../XProviders';
 import {compressImage, pickImageFiles, takePicture} from './helpers';
 import type {XUploadAdapter, XUploadFile, XUploadResult} from './types';
@@ -127,10 +128,17 @@ export function XUploadImage({
     }
   }, [disabled, max, tasks.length, compress, compressWidth, quality, adapter, emit]);
 
-  /** 删除 */
+  /** 删除：先弹命令式确认框，确认后才删 */
   const handleRemove = useCallback(
     (index: number) => {
-      emit(currentRef.current.filter((_, i) => i !== index));
+      XConfirmForm.show({
+        title: '删除图片',
+        content: '确定要删除这张图片吗？',
+        confirmText: '删除',
+        danger: true,
+      }).then(ok => {
+        if (ok) emit(currentRef.current.filter((_, i) => i !== index));
+      });
     },
     [emit],
   );

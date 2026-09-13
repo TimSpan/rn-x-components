@@ -11,7 +11,6 @@ import {
   XCalendarPopup,
   XCarousel,
   XDropdownMenu,
-  XElevator,
   XLicensePlate,
   XLineChart,
   XNumberKeyboard,
@@ -139,26 +138,6 @@ export function XTabsDemo() {
             <Text style={styles.paneText}>超过 4 项自动横滚</Text>
           </XTabPane>
         </XTabs>
-      </Section>
-    </DemoPage>
-  );
-}
-
-// ============================================================================
-// XElevator 电梯楼层
-// ============================================================================
-const CITY_SECTIONS = 'ABCDE'.split('').map(letter => ({
-  title: letter,
-  data: Array.from({length: 4}, (_, i) => ({name: `${letter}城-${i + 1}`})),
-}));
-
-export function XElevatorDemo() {
-  return (
-    <DemoPage>
-      <Section title="右侧导航 + 分组吸顶">
-        <View style={{height: 360}}>
-          <XElevator sections={CITY_SECTIONS} onItemClick={item => Alert.alert('点击', item.name)} />
-        </View>
       </Section>
     </DemoPage>
   );

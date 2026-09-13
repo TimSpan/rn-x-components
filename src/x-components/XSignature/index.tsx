@@ -14,10 +14,9 @@
  * ============================================================================
  */
 
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {ImageFormat, useCanvasRef} from '@shopify/react-native-skia';
 import {StyleSheet, Text, View, StyleProp, ViewStyle} from 'react-native';
-import Svg, {Line} from 'react-native-svg';
 import {XButton} from '../XButton';
 import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
@@ -101,13 +100,7 @@ export function XSignature({
           onLayoutSize={setSize}
           canvasRef={canvasRef}
         />
-        {/* 米字格辅助线（仅空纸时显示提示） */}
-        {size.width > 0 && (
-          <Svg pointerEvents='none' width={size.width} height={size.height} style={styles.grid}>
-            <Line x1='0%' y1='50%' x2='100%' y2='50%' stroke={t.colorSplit} strokeWidth='1' strokeDasharray={[4, 4]} />
-            <Line x1='50%' y1='0%' x2='50%' y2='100%' stroke={t.colorSplit} strokeWidth='1' strokeDasharray={[4, 4]} />
-          </Svg>
-        )}
+        {/* 普通签名不放米字格：连笔签名场景不需要字形辅助线（逐字签名才有） */}
         {strokes.length === 0 && (
           <Text pointerEvents='none' style={[styles.placeholder, {color: t.colorTextTertiary}]}>
             {i18n('signHint')}
