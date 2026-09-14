@@ -1,10 +1,25 @@
 # react-native-x-components
 
+<div align="center">
+
+[![npm version](https://img.shields.io/npm/v/react-native-x-components.svg)](https://www.npmjs.com/package/react-native-x-components)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-TimSpan%2Frn--x--components-181717?logo=github)](https://github.com/TimSpan/rn-x-components)
+
+</div>
+
 Ant Design 风格的 React Native (Expo) 组件库。对齐 antd v5 设计 token，内置**暗黑模式**与**中英双语**，弹层体系基于自研 TopView（比 RN Modal 更快），覆盖表单、选择器、日历、录音、签名（Skia 逐字签名）、上传（MinIO 预签名适配器）、轻量图表等 40+ 组件。
+
+- 📦 GitHub：https://github.com/TimSpan/rn-x-components
+- 📖 文档：https://react-native-x-components.dev（AI 可抓取 `/llms-full.txt` 全量文档）
+- 💬 微信交流（问题反馈 / 技术交流 / 定制咨询）：
+
+<div align="center">
+<img src="./wechat-qrcode.png" alt="微信添加 Otis 为好友" width="260" />
+</div>
 
 > 🤖 **AI 编码工具（Cursor/Copilot/Claude 等）请先读包内 [AGENTS.md](./AGENTS.md)** ——
 > 前置接线清单、常见错误对照表、最小代码骨架，能避开 90% 的集成坑。
-> 文档站：<https://react-native-x-components.dev>（AI 可抓取 `/llms-full.txt` 全量文档）。
 
 ## 30 秒最小骨架
 

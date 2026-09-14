@@ -1,56 +1,50 @@
-# Welcome to your Expo app 👋
+# X-Components
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<div align="center">
 
-## Get started
+<img src="assets/icons/x-icon-1024.png" width="88" alt="X-Components logo" />
 
-1. Install dependencies
+**Ant Design 风格的 React Native (Expo) 组件库**
 
-   ```bash
-   npm install
-   ```
+[![npm version](https://img.shields.io/npm/v/react-native-x-components.svg)](https://www.npmjs.com/package/react-native-x-components)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-TimSpan%2Frn--x--components-181717?logo=github)](https://github.com/TimSpan/rn-x-components)
 
-2. Start the app
+[📦 npm 包](https://www.npmjs.com/package/react-native-x-components) ·
+[📖 组件文档](https://react-native-x-components.dev) ·
+[🐙 GitHub](https://github.com/TimSpan/rn-x-components)
 
-   ```bash
-   npx expo start
-   ```
+</div>
 
-In the output, you'll find options to open the app in a
+本仓库是组件库的**开发与示例工程**（Expo App，含全部 36 个组件的演示页）。
+组件库 npm 包源码位于 [`npm/`](./npm)，构建脚本 `scripts/build-lib.sh`。
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## 快速体验
 
 ```bash
-npm run reset-project
+npm install
+npx expo start          # 或 npx expo run:android 构建原生 dev client
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 目录结构
 
-### Other setup steps
+| 路径 | 说明 |
+|---|---|
+| `src/x-components/` | 组件库源码（发布到 npm 的就是这里的产物） |
+| `src/examples/` | 全部组件的演示页（registry 注册） |
+| `src/app/` | Expo Router 页面（介绍 / 组件 / 关于） |
+| `npm/` | npm 包模板（package.json / README / AGENTS.md） |
+| `scripts/build-lib.sh` | 一键构建 npm 包到 `.lib-build/` |
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## 文档
 
-## Learn more
+- 组件文档站：https://react-native-x-components.dev
+- AI 工具：抓取 `https://react-native-x-components.dev/llms-full.txt` 获取全量文档；npm 包内含 `AGENTS.md`
 
-To learn more about developing your project with Expo, look at the following resources:
+## 交流
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+问题反馈 / 技术交流 / 定制咨询，微信添加（备注来意）：
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<p align="center">
+  <img src="npm/wechat-qrcode.png" alt="微信添加 Otis 为好友" width="240" />
+</p>

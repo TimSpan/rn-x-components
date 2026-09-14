@@ -28,6 +28,7 @@ fs.writeFileSync('.lib-build/package.json', JSON.stringify(pkg, null, 2) + '\n')
 "
 cp npm/README.md .lib-build/README.md
 cp npm/AGENTS.md .lib-build/AGENTS.md
+cp npm/wechat-qrcode.png .lib-build/wechat-qrcode.png
 cp LICENSE .lib-build/LICENSE 2>/dev/null || true
 
 echo "▶ 4/4 产物概览"

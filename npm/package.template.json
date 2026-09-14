@@ -1,6 +1,6 @@
 {
   "name": "react-native-x-components",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Ant Design 风格的 React Native (Expo) 组件库：表单/弹层(TopView)/日历/Skia逐字签名/上传适配器(MinIO预签名)/轻量图表，内置暗黑模式与中英双语。",
   "main": "dist/index.js",
   "react-native": "dist/index.js",
@@ -8,7 +8,9 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "AGENTS.md",
+    "wechat-qrcode.png"
   ],
   "sideEffects": false,
   "keywords": [
@@ -31,9 +33,14 @@
     "popup"
   ],
   "license": "MIT",
+  "author": "KevinMao (maoyuxiang)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maoyuxiang/rn-x-components.git"
+    "url": "git+https://github.com/TimSpan/rn-x-components.git"
+  },
+  "homepage": "https://github.com/TimSpan/rn-x-components#readme",
+  "bugs": {
+    "url": "https://github.com/TimSpan/rn-x-components/issues"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
