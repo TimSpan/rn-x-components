@@ -2,6 +2,35 @@
 
 Ant Design 风格的 React Native (Expo) 组件库。对齐 antd v5 设计 token，内置**暗黑模式**与**中英双语**，弹层体系基于自研 TopView（比 RN Modal 更快），覆盖表单、选择器、日历、录音、签名（Skia 逐字签名）、上传（MinIO 预签名适配器）、轻量图表等 40+ 组件。
 
+> 🤖 **AI 编码工具（Cursor/Copilot/Claude 等）请先读包内 [AGENTS.md](./AGENTS.md)** ——
+> 前置接线清单、常见错误对照表、最小代码骨架，能避开 90% 的集成坑。
+> 文档站：<https://react-native-x-components.dev>（AI 可抓取 `/llms-full.txt` 全量文档）。
+
+## 30 秒最小骨架
+
+```tsx
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { XPopupProvider, XButton, XToastService, confirm } from 'react-native-x-components';
+
+export default function App() {
+  return (
+    <GestureHandlerRootView style={{flex: 1}}>
+      <XPopupProvider>   {/* 必挂！否则命令式 API 静默失效 */}
+        <XButton
+          type="primary"
+          onPress={async () => {
+            const ok = await confirm({ title: '确认提交？', danger: true });
+            if (ok) XToastService.show({ message: '已提交', type: 'success' });
+          }}
+        >
+          点我
+        </XButton>
+      </XPopupProvider>
+    </GestureHandlerRootView>
+  );
+}
+```
+
 ## 特性
 
 - 🌗 **暗黑模式**：`useXTheme()` 全组件自适应，`setXThemeMode('light' | 'dark' | 'system')` 一行切换
