@@ -27,7 +27,8 @@ export function DemoPage({ children }: { children: React.ReactNode }) {
 
 /** 卡片 */
 export function Card({ children }: { children: React.ReactNode }) {
-  return <View style={styles.card}>{children}</View>;
+  const t = useXTheme();
+  return <View style={[styles.card, {backgroundColor: t.colorBgContainer}]}>{children}</View>;
 }
 
 /** 行容器 */
@@ -38,7 +39,6 @@ export function Row({ children, style }: { children: React.ReactNode; style?: an
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: '#F5F6F8',
   },
   scrollView: {
     flex: 1,
@@ -49,25 +49,19 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 16,
-    backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
   },
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(0,0,0,0.45)',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FAFAFA',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#F0F0F0',
   },
   sectionBody: {
     padding: 16,
   },
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,

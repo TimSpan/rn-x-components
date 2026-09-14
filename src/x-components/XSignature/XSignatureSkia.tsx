@@ -199,10 +199,11 @@ export function XSignatureSkia({
         />
         {canvasSize.width > 0 && canvasSize.height > 0 && (
           <Svg pointerEvents='none' width={canvasSize.width} height={canvasSize.height} style={styles.grid}>
-            <Line x1='0%' y1='50%' x2='100%' y2='50%' stroke={t.colorSplit} strokeWidth='1' strokeDasharray={[4, 4]} />
-            <Line x1='50%' y1='0%' x2='50%' y2='100%' stroke={t.colorSplit} strokeWidth='1' strokeDasharray={[4, 4]} />
-            <Line x1='0%' y1='0%' x2='100%' y2='100%' stroke={t.colorSplit} strokeWidth='1' strokeDasharray={[4, 4]} />
-            <Line x1='100%' y1='0%' x2='0%' y2='100%' stroke={t.colorSplit} strokeWidth='1' strokeDasharray={[4, 4]} />
+            {/* 网格线固定浅灰：签名纸恒为白底，暗黑模式下白色低透明 token 会隐形 */}
+            <Line x1='0%' y1='50%' x2='100%' y2='50%' stroke='#DDDDDD' strokeWidth='1' strokeDasharray={[4, 4]} />
+            <Line x1='50%' y1='0%' x2='50%' y2='100%' stroke='#DDDDDD' strokeWidth='1' strokeDasharray={[4, 4]} />
+            <Line x1='0%' y1='0%' x2='100%' y2='100%' stroke='#DDDDDD' strokeWidth='1' strokeDasharray={[4, 4]} />
+            <Line x1='100%' y1='0%' x2='0%' y2='100%' stroke='#DDDDDD' strokeWidth='1' strokeDasharray={[4, 4]} />
           </Svg>
         )}
       </View>

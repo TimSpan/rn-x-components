@@ -116,7 +116,7 @@ export const darkTokens: XTheme = {
   colorTextLightSolid: '#FFFFFF',
 
   colorBorder: 'rgba(255, 255, 255, 0.22)',
-  colorSplit: 'rgba(255, 255, 255, 0.08)',
+  colorSplit: 'rgba(255, 255, 255, 0.15)',
   colorProgressTrack: 'rgba(255, 255, 255, 0.12)',
   colorBgContainer: '#212225',
   colorBgLayout: '#000000',

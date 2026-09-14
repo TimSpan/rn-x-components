@@ -138,46 +138,56 @@ interface MenuOverlayProps {
 
 const MenuOverlay = ({visible, trigger, round, onClose, onExitEnd, snapshot, panel}: MenuOverlayProps) => {
   const t = useXTheme();
-  /** 面板内容高度（onLayout 实测 → 决定位移初值） */
+  /** 面板内容高度（onLayout 实测，决定遮罩起点 & 完全收起判断） */
   const [panelHeight, setPanelHeight] = useState(0);
-  const translateY = useSharedValue(0);
+  /** scaleY 展开动画（transformOrigin 顶部 = 触发条下沿），像"从触发条下面抽出/收回" */
+  const scaleY = useSharedValue(0);
   const maskOpacity = useSharedValue(0);
 
-  /**
-   * 面板位移：隐藏态 = -(panelHeight + 20)（藏在触发条上方），visible 后
-   * 下一帧滑到 0（duxui 的 translateY(-100%) 下拉）。panelHeight 未测得前
-   * 不动画，避免从 0 位置闪现。
-   */
+  /** 展开 scaleY 0→1（顶部锚点），遮罩淡入 */
   useEffect(() => {
-    if (visible && panelHeight > 0) {
+    if (visible) {
       const raf = requestAnimationFrame(() => {
-        translateY.value = withTiming(0, {duration: 200, easing: Easing.out(Easing.ease)});
+        scaleY.value = withTiming(1, {duration: 200, easing: Easing.out(Easing.cubic)});
         maskOpacity.value = withTiming(0.4, {duration: 200});
       });
       return () => cancelAnimationFrame(raf);
     }
-  }, [visible, panelHeight, translateY, maskOpacity]);
+  }, [visible, scaleY, maskOpacity]);
 
-  /** 离场：反向动画后通知宿主移除 */
+  /** 收起 scaleY →0（同锚点收回，不再向上平移），动画后通知宿主移除 */
   useEffect(() => {
     if (!visible) {
-      translateY.value = withTiming(-(panelHeight + 20), {duration: 200, easing: Easing.inOut(Easing.ease)});
-      maskOpacity.value = withTiming(0, {duration: 200});
-      const timer = setTimeout(onExitEnd, 250);
+      scaleY.value = withTiming(0, {duration: 180, easing: Easing.in(Easing.cubic)});
+      maskOpacity.value = withTiming(0, {duration: 180});
+      const timer = setTimeout(onExitEnd, 220);
       return () => clearTimeout(timer);
     }
-  }, [visible, panelHeight, translateY, maskOpacity, onExitEnd]);
+  }, [visible, scaleY, maskOpacity, onExitEnd]);
 
   const panelStyle = useAnimatedStyle(() => ({
-    transform: [{translateY: translateY.value}],
+    transform: [{scaleY: scaleY.value}],
   }));
   const maskStyle = useAnimatedStyle(() => ({opacity: maskOpacity.value}));
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents='box-none'>
-      {/* 遮罩：全屏，点按关闭（触发条区域被快照盖住，视觉连续） */}
-      <AnimatedPressable style={[StyleSheet.absoluteFill, {backgroundColor: '#000'}, maskStyle]} onPress={onClose} />
-      {/* 触发条快照：原位盖在遮罩上，带容器底色保证非激活项在遮罩上可见 */}
+      {/* 遮罩：只盖触发条下方区域（duxui 同款），点按关闭；触发条本体不被遮罩覆盖 */}
+      <AnimatedPressable
+        style={[
+          {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: trigger.y + trigger.height,
+            bottom: 0,
+            backgroundColor: '#000',
+          },
+          maskStyle,
+        ]}
+        onPress={onClose}
+      />
+      {/* 触发条快照：显示激活态标题（原位覆盖，遮罩外） */}
       <View
         pointerEvents='none'
         style={{
@@ -191,7 +201,7 @@ const MenuOverlay = ({visible, trigger, round, onClose, onExitEnd, snapshot, pan
       >
         {snapshot}
       </View>
-      {/* 面板：宽度对齐触发条，从上方滑入 */}
+      {/* 面板：宽度对齐触发条，scaleY 从触发条下沿展开/收回（transformOrigin 顶部） */}
       <Animated.View
         style={[
           styles.panel,
@@ -202,6 +212,7 @@ const MenuOverlay = ({visible, trigger, round, onClose, onExitEnd, snapshot, pan
             backgroundColor: t.colorBgContainer,
             borderBottomLeftRadius: round ? t.borderRadiusXL : 0,
             borderBottomRightRadius: round ? t.borderRadiusXL : 0,
+            transformOrigin: '50% 0%',
           },
           panelStyle,
         ]}

@@ -6,6 +6,7 @@ import {
   XLoadingModalService,
   XImagePreviewService,
   XAnimatedSearchPanel,
+  useXTheme,
 } from '@/x-components';
 import { DemoPage, Section, Row } from './ui';
 
@@ -90,21 +91,22 @@ export function XImagePreviewDemo() {
 // XAnimatedSearchPanel
 // ============================================================================
 export function XAnimatedSearchPanelDemo() {
+  const t = useXTheme();
   return (
     <DemoPage>
       <Section title="列表头可折叠搜索面板">
-        <Text style={styles.desc}>
+        <Text style={[styles.desc, {color: t.colorTextTertiary}]}>
           单 progress 驱动高度/淡入/箭头旋转/文案交叉淡入，点击标题展开/收起
         </Text>
       </Section>
-      <View style={styles.panelContainer}>
+      <View style={[styles.panelContainer, {backgroundColor: t.colorBgContainer}]}>
         <XAnimatedSearchPanel
           onSearch={() => XToastService.show({ message: '搜索', type: 'info' })}
           onReset={() => XToastService.show({ message: '重置', type: 'info' })}
         >
-          <View style={styles.searchContent}>
-            <Text style={styles.searchText}>搜索条件区域（可折叠）</Text>
-            <Text style={styles.desc}>这里放筛选表单控件</Text>
+          <View style={[styles.searchContent, {backgroundColor: t.colorPrimaryBg}]}>
+            <Text style={[styles.searchText, {color: t.colorPrimary}]}>搜索条件区域（可折叠）</Text>
+            <Text style={[styles.desc, {color: t.colorTextTertiary}]}>这里放筛选表单控件</Text>
           </View>
         </XAnimatedSearchPanel>
       </View>
@@ -113,15 +115,13 @@ export function XAnimatedSearchPanelDemo() {
 }
 
 const styles = StyleSheet.create({
-  desc: { fontSize: 13, color: 'rgba(0,0,0,0.45)', lineHeight: 20 },
+  desc: { fontSize: 13, lineHeight: 20 },
   panelContainer: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
   },
   searchContent: {
     padding: 16,
-    backgroundColor: '#E6F1FE',
   },
-  searchText: { fontSize: 14, color: '#2080F0' },
+  searchText: { fontSize: 14 },
 });

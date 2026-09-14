@@ -222,6 +222,6 @@ export function XImageDemo() {
 }
 
 const styles = StyleSheet.create({
-  demoText: { fontSize: 14, color: '#666' },
+  demoText: { fontSize: 14, color: 'rgba(128,128,128,0.9)' },
   resultText: { fontSize: 13, color: '#2080F0', marginTop: 8 },
 });

@@ -14,9 +14,9 @@
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {useXTheme, useXThemeScheme} from '../theme';
-import {setXThemeMode, XThemeMode} from '../theme';
+import {useXTheme, useXThemeMode, setXThemeMode, XThemeMode} from '../theme';
 import {useXBrandStore, setXBrandByName, X_BRAND_PRESETS} from './BrandColor';
+import {showXActionSheet} from '../XActionSheet/global';
 import {useXLocale, setXLocale, XLocale} from '../XLocale';
 
 export interface ThemeControlsProps {
@@ -24,11 +24,14 @@ export interface ThemeControlsProps {
   style?: any;
 }
 
-/** 暗黑 / 浅色 循环切换 */
+/**
+ * 暗黑切换：三态循环 📱跟随系统 → 🌙暗 → ☀️亮 → 📱。
+ * 用户点过两态按钮会永久脱离系统跟随（bug 根因），三态保证能回到"自动"。
+ */
 function ThemeModeButton({compact}: {compact?: boolean}) {
   const t = useXTheme();
-  const scheme = useXThemeScheme();
-  const next: XThemeMode = scheme === 'dark' ? 'light' : 'dark';
+  const mode = useXThemeMode();
+  const next: XThemeMode = mode === 'system' ? 'dark' : mode === 'dark' ? 'light' : 'system';
   return (
     <Pressable
       onPress={() => setXThemeMode(next)}
@@ -39,22 +42,24 @@ function ThemeModeButton({compact}: {compact?: boolean}) {
       ]}
     >
       <Text style={[compact ? styles.icon : styles.iconBig, {color: t.colorText}]}>
-        {scheme === 'dark' ? '☀️' : '🌙'}
+        {mode === 'system' ? '📱' : mode === 'dark' ? '🌙' : '☀️'}
       </Text>
     </Pressable>
   );
 }
 
-/** 主题色循环切换：4 套预设品牌色 */
+/** 主题色选择：点击弹 ActionSheet（当前色打勾），选中即时生效 */
 function BrandColorButton({compact}: {compact?: boolean}) {
   const t = useXTheme();
   const brand = useXBrandStore(s => s.brand);
   return (
     <Pressable
-      onPress={() => {
-        const idx = X_BRAND_PRESETS.findIndex(p => p.name === brand.name);
-        const next = X_BRAND_PRESETS[(idx + 1) % X_BRAND_PRESETS.length];
-        setXBrandByName(next.name);
+      onPress={async () => {
+        const picked = await showXActionSheet({
+          title: '选择主题色',
+          options: X_BRAND_PRESETS.map(p => ({label: `⬤  ${p.name}`, value: p.name})),
+        });
+        if (picked) setXBrandByName(picked);
       }}
       hitSlop={8}
       style={({pressed}) => [

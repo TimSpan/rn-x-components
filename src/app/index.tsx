@@ -1,8 +1,9 @@
 import { ScrollView, StyleSheet, Text, View, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ThemeControls } from "@/x-components";
+import { ThemeControls, useXTheme, type XTheme } from "@/x-components";
 
-const PRIMARY = "#2080F0";
+const NPM_URL = "https://www.npmjs.com/package/react-native-x-components";
+
 const COMPONENTS: { name: string; desc: string }[] = [
   // 基础
   {name: "XButton", desc: "按钮"},
@@ -51,8 +52,126 @@ const COMPONENTS: { name: string; desc: string }[] = [
   {name: "XChart", desc: "折线/柱状/饼图"},
 ];
 
+/** 主题化样式工厂：暗黑/品牌色全部走 token（每次主题组合变化才重建） */
+const makeStyles = (t: XTheme) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colorBgLayout },
+    topBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingBottom: 8,
+    },
+    topTitle: { fontSize: 13, color: t.colorTextTertiary, fontWeight: "600" },
+    hero: { alignItems: "center", paddingVertical: 40 },
+    logoBox: {
+      width: 80,
+      height: 80,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    logoText: { fontSize: 44, fontWeight: "800", color: "#fff" },
+    heroTitle: { fontSize: 26, fontWeight: "700", color: t.colorText },
+    heroSubtitle: { fontSize: 15, color: t.colorTextTertiary, marginTop: 6 },
+    card: {
+      backgroundColor: t.colorBgContainer,
+      borderRadius: 12,
+      padding: 20,
+      marginHorizontal: 16,
+      marginBottom: 12,
+    },
+    cardTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: t.colorText,
+      marginBottom: 12,
+    },
+    paragraph: {
+      fontSize: 14,
+      color: t.colorTextSecondary,
+      lineHeight: 22,
+      marginBottom: 8,
+    },
+    code: { fontFamily: "monospace", color: t.colorPrimary, fontWeight: "600" },
+    link: { textDecorationLine: "underline" },
+    section: { paddingHorizontal: 16, marginBottom: 12 },
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: t.colorText,
+      marginBottom: 12,
+    },
+    featureRow: { flexDirection: "row", gap: 10, marginBottom: 10 },
+    featureItem: {
+      flex: 1,
+      backgroundColor: t.colorBgContainer,
+      borderRadius: 12,
+      padding: 16,
+    },
+    featureIcon: { fontSize: 28, marginBottom: 8 },
+    featureTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: t.colorText,
+      marginBottom: 4,
+    },
+    featureDesc: { fontSize: 12, color: t.colorTextTertiary, lineHeight: 18 },
+    archTree: { marginTop: 12, paddingLeft: 8 },
+    archNode: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: t.colorPrimary,
+      marginBottom: 4,
+    },
+    archLine: {
+      fontSize: 12,
+      color: t.colorTextSecondary,
+      lineHeight: 22,
+      fontFamily: "monospace",
+    },
+    compGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+    compChip: {
+      backgroundColor: t.colorBgContainer,
+      borderRadius: 8,
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: t.colorSplit,
+    },
+    compName: { fontSize: 13, fontWeight: "600", color: t.colorPrimary },
+    compDesc: { fontSize: 11, color: t.colorTextTertiary },
+    flowBox: {
+      marginTop: 8,
+      backgroundColor: t.colorPrimaryBg,
+      borderRadius: 8,
+      padding: 12,
+    },
+    flowText: {
+      fontSize: 12,
+      lineHeight: 20,
+      fontFamily: "monospace",
+      color: t.colorPrimary,
+      fontWeight: "600",
+    },
+    flowSub: { fontSize: 12, color: t.colorTextTertiary, marginTop: 4 },
+    bulletList: { marginTop: 4 },
+    bullet: {
+      fontSize: 13,
+      color: t.colorTextSecondary,
+      lineHeight: 21,
+      marginBottom: 8,
+    },
+    footer: { alignItems: "center", paddingVertical: 24 },
+    footerText: { fontSize: 13, color: t.colorTextQuaternary },
+  });
+
 export default function IntroScreen() {
   const insets = useSafeAreaInsets();
+  const t = useXTheme();
+  const styles = makeStyles(t);
   return (
     <ScrollView
       style={styles.container}
@@ -66,7 +185,7 @@ export default function IntroScreen() {
 
       {/* Hero */}
       <View style={styles.hero}>
-        <View style={[styles.logoBox, {backgroundColor: PRIMARY}]}>
+        <View style={[styles.logoBox, { backgroundColor: t.colorPrimary }]}>
           <Text style={styles.logoText}>X</Text>
         </View>
         <Text style={styles.heroTitle}>X-Components</Text>
@@ -236,8 +355,8 @@ export default function IntroScreen() {
           {"\n"}
           {"\n"}主页：
           <Text
-            style={[styles.code, {textDecorationLine: 'underline'}]}
-            onPress={() => Linking.openURL('https://www.npmjs.com/package/react-native-x-components')}
+            style={[styles.code, styles.link]}
+            onPress={() => Linking.openURL(NPM_URL)}
           >
             https://www.npmjs.com/package/react-native-x-components
           </Text>
@@ -252,117 +371,3 @@ export default function IntroScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F5F6F8" },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  topTitle: { fontSize: 13, color: 'rgba(0,0,0,0.45)', fontWeight: '600' },
-  hero: { alignItems: "center", paddingVertical: 40 },
-  logoBox: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    backgroundColor: PRIMARY,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  logoText: { fontSize: 44, fontWeight: "800", color: "#fff" },
-  heroTitle: { fontSize: 26, fontWeight: "700", color: "rgba(0,0,0,0.88)" },
-  heroSubtitle: { fontSize: 15, color: "rgba(0,0,0,0.45)", marginTop: 6 },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    marginHorizontal: 16,
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "rgba(0,0,0,0.88)",
-    marginBottom: 12,
-  },
-  paragraph: {
-    fontSize: 14,
-    color: "rgba(0,0,0,0.65)",
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  code: { fontFamily: "monospace", color: PRIMARY, fontWeight: "600" },
-  section: { paddingHorizontal: 16, marginBottom: 12 },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "rgba(0,0,0,0.88)",
-    marginBottom: 12,
-  },
-  featureRow: { flexDirection: "row", gap: 10, marginBottom: 10 },
-  featureItem: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-  },
-  featureIcon: { fontSize: 28, marginBottom: 8 },
-  featureTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "rgba(0,0,0,0.88)",
-    marginBottom: 4,
-  },
-  featureDesc: { fontSize: 12, color: "rgba(0,0,0,0.45)", lineHeight: 18 },
-  archTree: { marginTop: 12, paddingLeft: 8 },
-  archNode: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: PRIMARY,
-    marginBottom: 4,
-  },
-  archLine: {
-    fontSize: 12,
-    color: "rgba(0,0,0,0.65)",
-    lineHeight: 22,
-    fontFamily: "monospace",
-  },
-  compGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  compChip: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "#F0F0F0",
-  },
-  compName: { fontSize: 13, fontWeight: "600", color: PRIMARY },
-  compDesc: { fontSize: 11, color: "rgba(0,0,0,0.45)" },
-  flowBox: {
-    marginTop: 8,
-    backgroundColor: "#F0F7FF",
-    borderRadius: 8,
-    padding: 12,
-  },
-  flowText: {
-    fontSize: 12,
-    lineHeight: 20,
-    fontFamily: "monospace",
-    color: PRIMARY,
-    fontWeight: "600",
-  },
-  flowSub: { fontSize: 12, color: "rgba(0,0,0,0.45)", marginTop: 4 },
-  bulletList: { marginTop: 4 },
-  bullet: {
-    fontSize: 13,
-    color: "rgba(0,0,0,0.65)",
-    lineHeight: 21,
-    marginBottom: 8,
-  },
-  footer: { alignItems: "center", paddingVertical: 24 },
-  footerText: { fontSize: 13, color: "rgba(0,0,0,0.25)" },
-});
