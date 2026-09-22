@@ -28,8 +28,8 @@ import {useXLocale} from '../XLocale';
 
 /** 菜单选项 */
 export interface XActionSheetOption<T = any> {
-  /** 显示文本 */
-  label: string;
+  /** 显示内容：文本或自定义节点（如 带色圆点+文字 的行） */
+  label: string | React.ReactNode;
   /** 回传的值 */
   value: T;
   /** 危险操作：文字变红 */
@@ -160,7 +160,11 @@ export function XActionSheet<T = any>({
               // style 可以是函数：pressed 状态时换个底色，模拟按压反馈
               style={({pressed}) => [styles.option, pressed && !option.disabled && styles.pressed]}
             >
-              <Text style={[styles.optionText, option.danger && styles.dangerText, option.disabled && styles.disabledText]}>{option.label}</Text>
+              {typeof option.label === 'string' ? (
+                <Text style={[styles.optionText, option.danger && styles.dangerText, option.disabled && styles.disabledText]}>{option.label}</Text>
+              ) : (
+                option.label
+              )}
             </Pressable>
           ))}
         </View>

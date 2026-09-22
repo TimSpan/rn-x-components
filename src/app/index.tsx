@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Linking } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Linking, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemeControls, useXTheme, type XTheme } from "@/x-components";
 
@@ -65,15 +65,12 @@ const makeStyles = (t: XTheme) =>
     },
     topTitle: { fontSize: 13, color: t.colorTextTertiary, fontWeight: "600" },
     hero: { alignItems: "center", paddingVertical: 40 },
-    logoBox: {
-      width: 80,
-      height: 80,
-      borderRadius: 20,
-      justifyContent: "center",
-      alignItems: "center",
+    heroLogo: {
+      width: 84,
+      height: 84,
+      borderRadius: 19,
       marginBottom: 16,
     },
-    logoText: { fontSize: 44, fontWeight: "800", color: "#fff" },
     heroTitle: { fontSize: 26, fontWeight: "700", color: t.colorText },
     heroSubtitle: { fontSize: 15, color: t.colorTextTertiary, marginTop: 6 },
     card: {
@@ -185,9 +182,8 @@ export default function IntroScreen() {
 
       {/* Hero */}
       <View style={styles.hero}>
-        <View style={[styles.logoBox, { backgroundColor: t.colorPrimary }]}>
-          <Text style={styles.logoText}>X</Text>
-        </View>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <Image source={require("@/assets/icons/x-icon-1024.png")} style={styles.heroLogo} resizeMode="cover" />
         <Text style={styles.heroTitle}>X-Components</Text>
         <Text style={styles.heroSubtitle}>React Native 高质量组件库</Text>
       </View>
@@ -348,8 +344,6 @@ export default function IntroScreen() {
         <Text style={styles.paragraph}>
           包名：
           <Text style={styles.code}> react-native-x-components</Text>
-          {"\n"}最新版本：
-          <Text style={styles.code}>0.1.0</Text>
           {"\n"}安装：
           <Text style={styles.code}>npm install react-native-x-components</Text>
           {"\n"}

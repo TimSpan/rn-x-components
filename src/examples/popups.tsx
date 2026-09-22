@@ -73,7 +73,7 @@ export function XActionSheetDemo() {
           { label: '删除', value: 'delete', danger: true },
         ]}
         onSelect={(option) => {
-          setResult(option.label);
+          setResult(typeof option.label === 'string' ? option.label : 'save');
           setVisible(false);
         }}
       />

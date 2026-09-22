@@ -57,7 +57,27 @@ function BrandColorButton({compact}: {compact?: boolean}) {
       onPress={async () => {
         const picked = await showXActionSheet({
           title: '选择主题色',
-          options: X_BRAND_PRESETS.map(p => ({label: `⬤  ${p.name}`, value: p.name})),
+          options: X_BRAND_PRESETS.map(p => ({
+            label: (
+              <View style={{flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 2}}>
+                <View
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 9,
+                    backgroundColor: p.primary,
+                    borderWidth: brand.name === p.name ? 3 : 0,
+                    borderColor: t.colorSplit,
+                  }}
+                />
+                <Text style={{color: t.colorText, fontSize: 15}}>
+                  {p.name}
+                  {brand.name === p.name ? '（当前）' : ''}
+                </Text>
+              </View>
+            ),
+            value: p.name,
+          })),
         });
         if (picked) setXBrandByName(picked);
       }}

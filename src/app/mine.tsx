@@ -1,6 +1,6 @@
-import { ScrollView, StyleSheet, Text, View, Linking } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Linking, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ThemeControls, useXTheme, xT } from '@/x-components';
+import { ThemeControls, useXTheme } from '@/x-components';
 
 const NPM_URL = 'https://www.npmjs.com/package/react-native-x-components';
 
@@ -20,9 +20,11 @@ export default function AboutScreen() {
 
       {/* 头部：品牌 */}
       <View style={styles.header}>
-        <View style={[styles.avatarBox, {backgroundColor: t.colorPrimary}]}>
-          <Text style={styles.avatarText}>X</Text>
-        </View>
+        <Image
+          source={require('@/assets/icons/x-icon-1024.png')}
+          style={styles.avatarBox}
+          resizeMode="cover"
+        />
         <View style={styles.headerInfo}>
           <Text style={[styles.name, {color: t.colorText}]}>X-Components</Text>
           <Text style={[styles.role, {color: t.colorTextTertiary}]}>
@@ -36,8 +38,6 @@ export default function AboutScreen() {
         <Text style={[styles.sectionTitle, {color: t.colorTextTertiary}]}>已发布到 npm</Text>
         <View style={[styles.card, {backgroundColor: t.colorBgContainer}]}>
           <InfoRow label="包名" value="react-native-x-components" theme={t} mono />
-          <Divider theme={t} />
-          <InfoRow label="版本" value="0.1.0" theme={t} mono />
           <Divider theme={t} />
           <InfoRow
             label="主页"
@@ -80,7 +80,7 @@ export default function AboutScreen() {
 
       <View style={styles.footer}>
         <Text style={[styles.footerText, {color: t.colorTextQuaternary}]}>
-          v1.0.0 · Made with ❤️ by maoyuxiang
+          Made with ❤️ by maoyuxiang
         </Text>
       </View>
     </ScrollView>
@@ -143,10 +143,8 @@ const styles = StyleSheet.create({
   },
   avatarBox: {
     width: 64, height: 64, borderRadius: 32,
-    justifyContent: 'center', alignItems: 'center',
     marginRight: 16,
   },
-  avatarText: {fontSize: 32, fontWeight: '800', color: '#fff'},
   headerInfo: {flex: 1},
   name: {fontSize: 20, fontWeight: '700'},
   role: {fontSize: 14, marginTop: 4},
