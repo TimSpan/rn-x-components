@@ -13,7 +13,7 @@ import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
 import {useXUploadAdapter} from './provider';
 import {showXActionSheet} from '../XActionSheet/global';
-import {pickVideoFile, takeVideo} from './helpers';
+import {pickVideoFile, showPickErrorAlert, takeVideo} from './helpers';
 import {XVideoPreview} from '../XVideoPreview';
 import type {XUploadAdapter, XUploadResult} from './types';
 
@@ -69,10 +69,17 @@ export function XUploadVideo({
       ],
     });
     let file = null;
-    if (source === 'camera') {
-      file = await takeVideo({videoMaxDuration});
-    } else if (source === 'album') {
-      file = await pickVideoFile({videoMaxDuration});
+    try {
+      if (source === 'camera') {
+        file = await takeVideo({videoMaxDuration});
+      } else if (source === 'album') {
+        file = await pickVideoFile({videoMaxDuration});
+      }
+    } catch (e) {
+      // 取视频失败（权限被拒 / 无相机应用等）必须让用户可见，避免"点了没反应"
+      console.warn('[XUploadVideo] pick failed:', e);
+      showPickErrorAlert(String((e as Error)?.message ?? e));
+      return;
     }
     if (!file) return;
     setProgress(0);

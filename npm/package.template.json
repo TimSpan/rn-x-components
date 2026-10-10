@@ -1,6 +1,6 @@
 {
   "name": "react-native-x-components",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Ant Design 风格的 React Native (Expo) 组件库：表单/弹层(TopView)/日历/Skia逐字签名/上传适配器(MinIO预签名)/轻量图表，内置暗黑模式与中英双语。",
   "main": "dist/index.js",
   "react-native": "dist/index.js",
@@ -50,18 +50,17 @@
     "react-native-svg": ">=14.0.0",
     "react-native-gesture-handler": ">=2.0.0"
   },
-  "peerDependenciesMeta": {
-    "@shopify/react-native-skia": { "optional": true },
-    "@react-native-vector-icons/ant-design": { "optional": true },
-    "expo-audio": { "optional": true },
-    "expo-file-system": { "optional": true },
-    "expo-image-manipulator": { "optional": true },
-    "expo-image-picker": { "optional": true },
-    "react-native-linear-gradient": { "optional": true },
-    "react-native-zoom-toolkit": { "optional": true }
-  },
   "dependencies": {
+    "@react-native-vector-icons/ant-design": ">=12.0.0",
+    "@shopify/react-native-skia": ">=1.0.0",
     "dayjs": "^1.11.0",
+    "expo-audio": ">=1.0.0",
+    "expo-file-system": ">=18.0.0",
+    "expo-image-manipulator": ">=12.0.0",
+    "expo-image-picker": ">=16.0.0",
+    "expo-video": ">=2.0.0",
+    "react-native-linear-gradient": ">=2.8.0",
+    "react-native-zoom-toolkit": ">=5.0.0",
     "zustand": "^5.0.0"
   }
 }

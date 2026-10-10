@@ -12,8 +12,20 @@
 import * as ImagePicker from 'expo-image-picker';
 import {SaveFormat, manipulateAsync} from 'expo-image-manipulator';
 import {EncodingType, File, Paths} from 'expo-file-system';
+import {Alert, Linking} from 'react-native';
 import type {XUploadAdapter, XUploadFile, XUploadResult} from './types';
 import {getXUploadAdapter} from './provider';
+
+/**
+ * 取图/取视频失败时统一弹窗：把"看不见的异常"变成用户可读提示，
+ * 并给一个「去设置」入口（权限被永久拒绝时的唯一出路）。
+ */
+export function showPickErrorAlert(message: string): void {
+  Alert.alert('无法打开相机/相册', message, [
+    {text: '取消', style: 'cancel'},
+    {text: '去设置', onPress: () => void Linking.openSettings()},
+  ]);
+}
 
 /** picker 资产 → XUploadFile */
 function toUploadFile(asset: ImagePicker.ImagePickerAsset): XUploadFile {
@@ -25,27 +37,52 @@ function toUploadFile(asset: ImagePicker.ImagePickerAsset): XUploadFile {
   };
 }
 
+/**
+ * 申请相机权限；未授予时抛出「可读、可定位」的错误。
+ *
+ * 背景：expo-image-picker 的 launchCameraAsync 内部本身也会申请 CAMERA 并在被拒时抛
+ * UserRejectedPermissionsException / MissingActivityToHandleIntent，但那两个错误对业务
+ * 不可读，且很容易在业务侧的 async 流程里被吞掉（表现为"点了拍照没任何反应"）。
+ * 这里提前申请并给出明确文案，配合组件侧 try/catch 弹 Alert，问题即可见。
+ */
+export async function ensureCameraPermission(): Promise<void> {
+  const res = await ImagePicker.requestCameraPermissionsAsync();
+  if (res.granted) return;
+  throw new Error(
+    res.canAskAgain
+      ? '未获得相机权限。请在系统弹出的权限框中允许「相机」后重试。'
+      : '相机权限已被拒绝。请到 系统设置 → 应用 → 权限 中手动开启「相机」权限后重试。',
+  );
+}
+
 /** 拍照 */
 export async function takePicture(options?: {quality?: number}): Promise<XUploadFile | null> {
-  // 拍照权限（Android 自动授予，iOS 第一次会弹）
-  await ImagePicker.requestCameraPermissionsAsync();
-  const res = await ImagePicker.launchCameraAsync({
-    mediaTypes: ['images'],
-    quality: options?.quality ?? 0.9,
-  });
-  if (res.canceled || !res.assets.length) return null;
-  return toUploadFile(res.assets[0]);
+  await ensureCameraPermission();
+  try {
+    const res = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      quality: options?.quality ?? 0.9,
+    });
+    if (res.canceled || !res.assets.length) return null;
+    return toUploadFile(res.assets[0]);
+  } catch (e) {
+    throw new Error(`调起相机失败：${(e as Error)?.message ?? e}（请确认设备有可用相机应用，且已授予相机权限）`);
+  }
 }
 
 /** 拍视频 */
 export async function takeVideo(options?: {videoMaxDuration?: number}): Promise<XUploadFile | null> {
-  await ImagePicker.requestCameraPermissionsAsync();
-  const res = await ImagePicker.launchCameraAsync({
-    mediaTypes: ['videos'],
-    videoMaxDuration: options?.videoMaxDuration ?? 60,
-  });
-  if (res.canceled || !res.assets.length) return null;
-  return toUploadFile(res.assets[0]);
+  await ensureCameraPermission();
+  try {
+    const res = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['videos'],
+      videoMaxDuration: options?.videoMaxDuration ?? 60,
+    });
+    if (res.canceled || !res.assets.length) return null;
+    return toUploadFile(res.assets[0]);
+  } catch (e) {
+    throw new Error(`调起相机失败：${(e as Error)?.message ?? e}（请确认设备有可用相机应用，且已授予相机权限）`);
+  }
 }
 
 /** 选图（可多选），返回本机文件列表 */

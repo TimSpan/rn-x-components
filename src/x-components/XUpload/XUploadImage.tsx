@@ -20,7 +20,7 @@ import {useXUploadAdapter} from './provider';
 import {showXActionSheet} from '../XActionSheet/global';
 import {XConfirmForm} from '../XConfirmForm';
 import {XImagePreviewService} from '../XProviders';
-import {compressImage, pickImageFiles, takePicture} from './helpers';
+import {compressImage, pickImageFiles, showPickErrorAlert, takePicture} from './helpers';
 import type {XUploadAdapter, XUploadFile, XUploadResult} from './types';
 
 export interface XUploadImageProps {
@@ -103,11 +103,19 @@ export function XUploadImage({
       ],
     });
     let picked: XUploadFile[] = [];
-    if (source === 'camera') {
-      const file = await takePicture({quality: 0.9});
-      if (file) picked = [file];
-    } else if (source === 'album') {
-      picked = await pickImageFiles({max: remaining, quality: 0.9});
+    try {
+      if (source === 'camera') {
+        const file = await takePicture({quality: 0.9});
+        if (file) picked = [file];
+      } else if (source === 'album') {
+        picked = await pickImageFiles({max: remaining, quality: 0.9});
+      }
+    } catch (e) {
+      // 取图失败（权限被拒 / 无相机应用等）必须让用户可见，
+      // 否则异常会被 Promise 吞掉，表现为"点了没反应"。
+      console.warn('[XUploadImage] pick failed:', e);
+      showPickErrorAlert(String((e as Error)?.message ?? e));
+      return;
     }
     for (const raw of picked) {
       if (currentRef.current.length >= max) break;
