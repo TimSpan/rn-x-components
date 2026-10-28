@@ -68,10 +68,17 @@ export function XSignatureSkia({
   const {t: i18n} = useXLocale();
   const insets = useSafeAreaInsets();
 
-  /** 非受控兜底：未传 value/onChange 时内部自持状态（示例/轻量场景开箱即用） */
+  /**
+   * 受控判定：只要传了 onChange 就按受控处理。
+   *
+   * 不能只看 value !== undefined —— 表单场景（XForm.Item / react-hook-form）
+   * 首次渲染时 value 是 undefined，之前就因此被误判成非受控，
+   * 结果 onChange 永远不触发、表单里拿不到值，提交时报"请签名"。
+   */
+  const isControlled = value !== undefined || !!onChange;
+  /** 非受控兜底：value / onChange 都没传时内部自持状态（示例/轻量场景开箱即用） */
   const [innerValue, setInnerValue] = useState<XSignatureSkiaValue | null>(null);
-  const signatureValue =
-    value !== undefined ? (value?.characters ? value : emptyValue()) : (innerValue ?? emptyValue());
+  const signatureValue = isControlled ? (value?.characters ? value : emptyValue()) : (innerValue ?? emptyValue());
   /** 预览画布 ref（完成时截图用） */
   const previewCanvasRef = useCanvasRef();
   const [visible, setVisible] = useState(false);
@@ -89,13 +96,13 @@ export function XSignatureSkia({
   const emitCharacters = useCallback(
     (characters: XSignatureCharacter[]) => {
       const next: XSignatureSkiaValue | null = characters.length ? {version: 1, characters} : null;
-      if (value !== undefined) {
+      if (isControlled) {
         onChange?.(next);
       } else {
         setInnerValue(next);
       }
     },
-    [value, onChange],
+    [isControlled, onChange],
   );
 
   /** 一笔画完 */

@@ -31,6 +31,7 @@ export interface XLoadingModalProps {
   visible: boolean;
   color?: string;
   size?: number | 'small' | 'large';
+  /** @deprecated 全局 loading 现在只有整屏遮罩、没有卡片底色，这个参数不再生效 */
   transparent?: boolean;
 }
 
@@ -64,27 +65,23 @@ export const XLoadingModal: React.FC<XLoadingModalProps> = ({
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: 'rgba(0,0,0,0.35)',
+          // 去掉卡片后，白色转圈/文案直接压在遮罩上：
+          // 0.35 / 0.45 在浅色页面上对比度不够，提到 0.6 才清晰（仍是半透明，能看到底下内容）
+          backgroundColor: 'rgba(0,0,0,0.6)',
         },
+        /**
+         * 只做布局，不画任何底色。
+         *
+         * 原来这里有一层深色胶囊（rgba(17,20,26,0.85)）+ 阴影，
+         * 叠在整屏遮罩上就出现了"遮罩里还有一块更黑的方块"的观感。
+         * 全局 loading 只需要「整屏遮罩 + 转圈 + 文案」，不要卡片。
+         */
         box: {
           flexDirection: 'row',
           alignItems: 'center',
           gap: 10,
           paddingHorizontal: 24,
           paddingVertical: 18,
-          borderRadius: theme.borderRadiusLG,
-          // 深色半透明胶囊：明暗两种模式都压在暗色遮罩上，保持固定深色
-          backgroundColor: 'rgba(17,20,26,0.85)',
-          shadowColor: '#000',
-          shadowOpacity: 0.2,
-          shadowRadius: 16,
-          shadowOffset: {width: 0, height: 8},
-          elevation: 10,
-        },
-        boxTransparent: {
-          backgroundColor: 'transparent',
-          shadowOpacity: 0,
-          elevation: 0,
         },
         title: {
           // 浅色实底文字：深色胶囊上的固定对比色
@@ -100,7 +97,7 @@ export const XLoadingModal: React.FC<XLoadingModalProps> = ({
   return (
     <Modal visible={visible} transparent animationType='fade' statusBarTranslucent presentationStyle='overFullScreen' hardwareAccelerated>
       <View style={styles.mask}>
-        <View style={[styles.box, transparent && styles.boxTransparent]}>
+        <View style={styles.box}>
           <ActivityIndicator size={size} color={resolvedColor} />
           {!!resolvedTitle && <Text style={styles.title}>{resolvedTitle}</Text>}
         </View>

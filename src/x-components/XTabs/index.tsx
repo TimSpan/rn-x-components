@@ -72,6 +72,20 @@ export interface XTabsProps {
   scroll?: boolean;
   /** swiper 模式下：激活过才渲染内容（保留已渲染），默认 true */
   lazyload?: boolean;
+  /**
+   * 非 swiper 模式下：是否保活所有页，默认 false。
+   *
+   * false（默认）= 只挂载当前激活页，切 Tab 会卸载旧页 —— 省内存，
+   *   但页内的表单控件 state、上传组件的本地文件、ref 都会丢。
+   * true = 所有页一起挂载，非激活页用 display:'none' 隐藏（不参与布局），
+   *   等价于 antd Tabs 的 prerenderingSiblingsNumber={Infinity}。
+   *   需要"多步表单来回切不丢输入"时用它。
+   *
+   * 注意：swiper 模式下内容被放进横向分页 ScrollView，flex:1 的子节点
+   * 拿不到高度（会塌成 0）—— 需要保活又需要撑满高度时请用 keepAlive，
+   * 不要用 swiper + lazyload={false}。
+   */
+  keepAlive?: boolean;
   /** tab 头均分宽度（不可滚动时有效），默认 false */
   justify?: boolean;
   /** 激活项右下角文字色跟随主色之外的自定义色（少量场景用） */
@@ -97,6 +111,7 @@ export function XTabs({
   swiper = false,
   scroll,
   lazyload = true,
+  keepAlive = false,
   justify = false,
   activeColor,
   style,
@@ -105,22 +120,24 @@ export function XTabs({
 }: XTabsProps) {
   const t = useXTheme();
   /** 解析 TabPane 子元素 → 数据化 panes（key 取 React key） */
-  const panes = useMemo<PaneEntry[]>(
-    () =>
-      React.Children.toArray(children)
-        .filter(React.isValidElement)
-        .map(el => {
-          const props = el.props as XTabPaneProps;
-          return {
-            key: String(el.key),
-            title: props.title,
-            badge: props.badge,
-            disabled: props.disabled,
-            content: props.children,
-          };
-        }),
-    [children],
-  );
+  const panes = useMemo<PaneEntry[]>(() => {
+    // 注意：不能用 React.Children.toArray —— 它会给已有 key 加 ".$" 前缀
+    // （'0' -> '.$0'），导致受控 value='0' 永远匹配不到 pane，Tab 永远切不动。
+    // Children.forEach 不改写 key，拿到的就是业务写的原始 key。
+    const list: PaneEntry[] = [];
+    React.Children.forEach(children, (el, index) => {
+      if (!React.isValidElement(el)) return;
+      const props = el.props as XTabPaneProps;
+      list.push({
+        key: el.key != null ? String(el.key) : String(index),
+        title: props.title,
+        badge: props.badge,
+        disabled: props.disabled,
+        content: props.children,
+      });
+    });
+    return list;
+  }, [children]);
 
   const isControlled = value !== undefined;
   const [inner, setInner] = useState<string | undefined>(() => defaultValue ?? panes[0]?.key);
@@ -287,6 +304,20 @@ export function XTabs({
             </ScrollView>
           )}
         </View>
+      ) : keepAlive ? (
+        // 保活：全部挂载，非激活页 display:'none' 隐藏（不参与布局，state/ref 都保留）
+        // 用 absoluteFill 让每页铺满内容区，flex:1 的子节点才能拿到高度
+        <View style={[styles.content, styles.contentFill]}>
+          {panes.map((pane, index) => (
+            <View
+              key={pane.key}
+              style={[StyleSheet.absoluteFill, index !== activeIndex && styles.hidden]}
+              pointerEvents={index === activeIndex ? 'auto' : 'none'}
+            >
+              {pane.content}
+            </View>
+          ))}
+        </View>
       ) : (
         // 非 swiper：只挂载激活页（切换即卸载，天然按需渲染）
         <View style={styles.content}>{panes[activeIndex]?.content}</View>
@@ -388,9 +419,19 @@ const styles = StyleSheet.create({
   },
   content: {
     overflow: 'hidden',
+    // 内容区必须撑满剩余高度：页面里常见 flex:1 的滚动容器，
+    // 父级不撑满就会塌成 0 高（表现为"Tab 头在、内容空白"）
+    flex: 1,
   },
   lazyPlaceholder: {
     height: 100,
+  },
+  /** keepAlive 模式：内容区撑满，absoluteFill 的每页才有真实尺寸 */
+  contentFill: {
+    flex: 1,
+  },
+  hidden: {
+    display: 'none',
   },
   disabled: {
     opacity: 0.5,

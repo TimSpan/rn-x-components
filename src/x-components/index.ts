@@ -80,6 +80,12 @@ export type {XMultiSelectProps} from './XMultiSelect';
 
 export {default as XFormPro} from './XFormPro';
 export {registerXFormProRenderer} from './XFormPro';
+// XFormPro 的字段触发器：react-hook-form 等自建表单体系里单独使用时从这里取
+// （XFormPro 内部也是用这两个，对外导出后不必再自己拼"触发区 + XPicker/XPickerDate"）
+export {XSelectField} from './XFormPro/components/XSelectField';
+export {XDateField} from './XFormPro/components/XDateField';
+export type {XSelectFieldProps} from './XFormPro/components/XSelectField';
+export type {XDateFieldProps} from './XFormPro/components/XDateField';
 export type {
   XFormModelValue,
   XOptionItem,

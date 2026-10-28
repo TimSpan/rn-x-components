@@ -20,7 +20,8 @@ import {useXUploadAdapter} from './provider';
 import {showXActionSheet} from '../XActionSheet/global';
 import {XConfirmForm} from '../XConfirmForm';
 import {XImagePreviewService} from '../XProviders';
-import {compressImage, pickImageFiles, showPickErrorAlert, takePicture} from './helpers';
+import {compressImage, pickImageFiles as expoPickImages, showPickErrorAlert, takePicture as expoTakePicture} from './helpers';
+import {getXUploadPicker} from './provider';
 import type {XUploadAdapter, XUploadFile, XUploadResult} from './types';
 
 export interface XUploadImageProps {
@@ -102,13 +103,18 @@ export function XUploadImage({
         {label: '取消', value: null},
       ],
     });
+    // 宿主注入的取图能力优先；没注入就用库内置的 react-native-image-picker 实现
+    const picker = getXUploadPicker();
+    const takePicture = picker.takePicture ?? expoTakePicture;
+    const pickImages = picker.pickImages ?? expoPickImages;
+
     let picked: XUploadFile[] = [];
     try {
       if (source === 'camera') {
         const file = await takePicture({quality: 0.9});
         if (file) picked = [file];
       } else if (source === 'album') {
-        picked = await pickImageFiles({max: remaining, quality: 0.9});
+        picked = await pickImages({max: remaining, quality: 0.9});
       }
     } catch (e) {
       // 取图失败（权限被拒 / 无相机应用等）必须让用户可见，

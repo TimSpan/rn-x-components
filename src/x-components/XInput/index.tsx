@@ -43,6 +43,13 @@ export interface XInputProps extends TextInputProps {
   /** 有内容时显示清空按钮（antd allowClear；multiline 下不生效） */
   allowClear?: boolean;
   /**
+   * 输入框内部右侧的附加节点（图标/按钮）。
+   * 参考 antd 的 suffix：眼睛图标、查询图标这类都走它，不用在外面拼一行。
+   */
+  suffix?: React.ReactNode;
+  /** 外层容器样式（想控制整行宽度/间距时用；style 是给 TextInput 的） */
+  containerStyle?: StyleProp<ViewStyle>;
+  /**
    * 自定义键盘：'numeric' 时盖住系统键盘，弹起自绘数字键盘
    * （带"完成"工具栏，按键直接回写 value；与 XNumberKeyboard 同源）。
    * 仅单行模式生效；与 multiline 互斥。
@@ -51,8 +58,6 @@ export interface XInputProps extends TextInputProps {
   /** 自定义键盘的小数点（false 隐藏；true 显示，默认 true） */
   customKeyboardPoint?: boolean;
   style?: StyleProp<TextStyle>;
-  /** 外层容器样式（有 allowClear 按钮时想要撑满/贴边用） */
-  containerStyle?: StyleProp<ViewStyle>;
 }
 
 export const XInput = forwardRef<TextInput, XInputProps>(function XInput(
@@ -65,6 +70,7 @@ export const XInput = forwardRef<TextInput, XInputProps>(function XInput(
     customKeyboard,
     customKeyboardPoint = true,
     style,
+    suffix,
     containerStyle,
     editable,
     ...rest
@@ -140,9 +146,17 @@ export const XInput = forwardRef<TextInput, XInputProps>(function XInput(
 
   // 自定义键盘模式下，"聚焦状态"由弹层是否展开驱动
   const isFocused = useCustomKb ? kbVisible : focused;
+  /**
+   * 有 suffix（框内右侧图标）时，边框/底色/圆角必须画在**容器**上，
+   * 否则图标会落在输入框边框外面 —— 看起来像浮在旁边。
+   * 这时内部 TextInput 去掉自己的边框和内边距，只负责文字。
+   */
+  const hasSuffix = suffix != null;
+  const boxedBorderColor = isFocused && !isDisabled ? t.colorPrimary : t.colorBorder;
+  const boxedBgColor = isDisabled ? t.colorBgContainerDisabled : isFocused ? t.colorBgContainer : t.colorBgLayout;
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, hasSuffix && styles.containerBoxed, hasSuffix && {borderColor: boxedBorderColor, backgroundColor: boxedBgColor}, containerStyle]}>
       {useCustomKb ? (
         // 自定义键盘：整个 TextInput 区域是个 Pressable，点按弹键盘
         <Pressable onPress={() => !isDisabled && setKbVisible(true)} disabled={isDisabled}>
@@ -189,16 +203,18 @@ export const XInput = forwardRef<TextInput, XInputProps>(function XInput(
           editable={!isDisabled}
           pointerEvents={isDisabled ? 'none' : undefined}
           style={[
-            styles.input,
-            {
-              borderColor: focused && !isDisabled ? t.colorPrimary : t.colorBorder,
-              color: isDisabled ? t.colorTextQuaternary : t.colorText,
-              backgroundColor: isDisabled
-                ? t.colorBgContainerDisabled
-                : focused
-                  ? t.colorBgContainer
-                  : t.colorBgLayout,
-            },
+            hasSuffix ? styles.inputInner : styles.input,
+            hasSuffix
+              ? {color: isDisabled ? t.colorTextQuaternary : t.colorText}
+              : {
+                  borderColor: focused && !isDisabled ? t.colorPrimary : t.colorBorder,
+                  color: isDisabled ? t.colorTextQuaternary : t.colorText,
+                  backgroundColor: isDisabled
+                    ? t.colorBgContainerDisabled
+                    : focused
+                      ? t.colorBgContainer
+                      : t.colorBgLayout,
+                },
             multiline && styles.textarea,
             style,
           ]}
@@ -222,6 +238,8 @@ export const XInput = forwardRef<TextInput, XInputProps>(function XInput(
           </View>
         </Pressable>
       )}
+
+      {suffix != null && <View style={styles.suffix}>{suffix}</View>}
 
       {/* 自定义数字键盘弹层（盖住系统键盘） */}
       {useCustomKb && (
@@ -259,6 +277,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
+  },
+  /** 有 suffix 时的外框：边框/底色/圆角/内边距都在这一层 */
+  containerBoxed: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    minHeight: 44,
+  },
+  /** 有 suffix 时内部输入框：不再自带边框和内边距 */
+  inputInner: {
+    flex: 1,
+    paddingHorizontal: 0,
+    paddingVertical: 10,
+    fontSize: 15,
+    backgroundColor: 'transparent',
   },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -298,6 +331,11 @@ const styles = StyleSheet.create({
   kbDone: {
     fontSize: 15,
     fontWeight: '600',
+  },
+  suffix: {
+    marginLeft: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   clearBtn: {
     position: 'absolute',

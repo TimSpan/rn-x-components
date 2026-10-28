@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useRef} from 'react';
-import {View, StyleSheet, TouchableOpacity, LayoutChangeEvent, Text} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, LayoutChangeEvent, Text, StyleProp, ViewStyle} from 'react-native';
 import Animated, {
   Easing,
   Extrapolation,
@@ -45,8 +45,24 @@ interface XAnimatedSearchPanelProps {
    * 作用是避免「首次点击展开时高度是 0，动画看起来没反应」。
    */
   contentHeight?: number;
-  onSearch: () => void;
-  onReset: () => void;
+  /**
+   * 自定义标题。传了就用这个固定文案（例如"照片"/"视频"），
+   * 不再做「展开搜索 / 收起搜索」的交叉淡入。
+   */
+  title?: React.ReactNode;
+  onSearch?: () => void;
+  onReset?: () => void;
+  /**
+   * 是否显示底部「重置 / 搜索」按钮，默认 true。
+   * 传 false 就退化成纯折叠面板（事件处置详情里的照片、视频折叠用这个形态）。
+   */
+  showFooter?: boolean;
+  /**
+   * 卡片外层样式覆盖。
+   * 嵌在已有 padding 的容器里时，用它把默认的 marginHorizontal:12 抹掉，
+   * 才能和同页其它卡片左右对齐。
+   */
+  style?: StyleProp<ViewStyle>;
   /**
    * 'spring'（默认）：收尾带极轻微回弹，手感更「活」；
    * 'timing'：纯缓动，时长可控、绝对不过冲。
@@ -125,8 +141,11 @@ const RESIZE_CONFIG = {
 export const XAnimatedSearchPanel = ({
   children,
   contentHeight = 300,
+  title,
   onSearch,
   onReset,
+  showFooter = true,
+  style,
   motion = 'spring',
   defaultExpanded = false,
   onToggle,
@@ -382,18 +401,24 @@ export const XAnimatedSearchPanel = ({
   }));
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       <TouchableOpacity style={styles.searchHeader} onPress={toggle} activeOpacity={0.7}>
         {/* titleWrap 固定宽高：里面两层是 absolute，脱离文档流后父容器会塌陷，
             固定尺寸能防止标题区在动画中抖动、也避免 header 高度跟着变 */}
-        <View style={styles.titleWrap}>
-          <Animated.View style={[styles.titleLayer, expandTextStyle]}>
-            <Text style={styles.searchTitle}>{i18n('expandSearch')}</Text>
-          </Animated.View>
-          <Animated.View style={[styles.titleLayer, collapseTextStyle]}>
-            <Text style={styles.searchTitle}>{i18n('collapseSearch')}</Text>
-          </Animated.View>
-        </View>
+        {title != null ? (
+          <View style={styles.titleWrap}>
+            <Text style={styles.searchTitle}>{title}</Text>
+          </View>
+        ) : (
+          <View style={styles.titleWrap}>
+            <Animated.View style={[styles.titleLayer, expandTextStyle]}>
+              <Text style={styles.searchTitle}>{i18n('expandSearch')}</Text>
+            </Animated.View>
+            <Animated.View style={[styles.titleLayer, collapseTextStyle]}>
+              <Text style={styles.searchTitle}>{i18n('collapseSearch')}</Text>
+            </Animated.View>
+          </View>
+        )}
         <Animated.View style={iconStyle}>
           <AntDesign name='down' size={20} color={t.colorText} />
         </Animated.View>
@@ -423,14 +448,20 @@ export const XAnimatedSearchPanel = ({
           <View onLayout={onContentLayout}>
             {children}
 
-            <View style={styles.searchButtons}>
-              <TouchableOpacity style={[styles.searchButton, styles.resetButton]} onPress={onReset} activeOpacity={0.7}>
-                <Text style={styles.resetButtonText}>{i18n('reset')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.searchButton, styles.submitButton]} onPress={onSearch} activeOpacity={0.7}>
-                <Text style={styles.submitButtonText}>{i18n('search')}</Text>
-              </TouchableOpacity>
-            </View>
+            {showFooter && (
+              <View style={styles.searchButtons}>
+                {!!onReset && (
+                  <TouchableOpacity style={[styles.searchButton, styles.resetButton]} onPress={onReset} activeOpacity={0.7}>
+                    <Text style={styles.resetButtonText}>{i18n('reset')}</Text>
+                  </TouchableOpacity>
+                )}
+                {!!onSearch && (
+                  <TouchableOpacity style={[styles.searchButton, styles.submitButton]} onPress={onSearch} activeOpacity={0.7}>
+                    <Text style={styles.submitButtonText}>{i18n('search')}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
           </View>
         </Animated.View>
       </Animated.View>

@@ -13,7 +13,8 @@ import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
 import {useXUploadAdapter} from './provider';
 import {showXActionSheet} from '../XActionSheet/global';
-import {pickVideoFile, showPickErrorAlert, takeVideo} from './helpers';
+import {pickVideoFile as expoPickVideo, showPickErrorAlert, takeVideo as expoTakeVideo} from './helpers';
+import {getXUploadPicker} from './provider';
 import {XVideoPreview} from '../XVideoPreview';
 import type {XUploadAdapter, XUploadResult} from './types';
 
@@ -68,12 +69,17 @@ export function XUploadVideo({
         {label: '取消', value: null},
       ],
     });
+    // 宿主注入的取图能力优先
+    const picker = getXUploadPicker();
+    const takeVideo = picker.takeVideo ?? expoTakeVideo;
+    const pickVideo = picker.pickVideo ?? expoPickVideo;
+
     let file = null;
     try {
       if (source === 'camera') {
         file = await takeVideo({videoMaxDuration});
       } else if (source === 'album') {
-        file = await pickVideoFile({videoMaxDuration});
+        file = await pickVideo({videoMaxDuration});
       }
     } catch (e) {
       // 取视频失败（权限被拒 / 无相机应用等）必须让用户可见，避免"点了没反应"

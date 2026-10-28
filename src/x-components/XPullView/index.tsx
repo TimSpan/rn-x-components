@@ -38,7 +38,7 @@
  */
 
 import React, {useCallback, useEffect, useRef} from 'react';
-import {Dimensions, Pressable, StyleSheet, View, StyleProp, ViewStyle} from 'react-native';
+import {Dimensions, Keyboard, Pressable, StyleSheet, View, StyleProp, ViewStyle} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -154,6 +154,8 @@ const PullOverlay = ({
    */
   useEffect(() => {
     if (visible) {
+      // 弹层要盖在键盘上方：先把键盘收起来，否则 Picker/弹窗会被键盘遮住
+      Keyboard.dismiss();
       const raf = requestAnimationFrame(() => {
         // 入场用 ease-out：起步快、末尾减速，给人"轻快"的感觉
         translate.value = withTiming(0, {duration, easing: Easing.out(Easing.ease)});

@@ -12,7 +12,7 @@
 
 import React, {createContext, useContext, useMemo} from 'react';
 import {createMinioPresignedAdapter, createMockUploadAdapter} from './adapters';
-import type {XUploadAdapter} from './types';
+import type {XUploadAdapter, XUploadPicker} from './types';
 
 /**
  * Mock 兜底实例：作为「未注入真实适配器」的哨兵。
@@ -74,6 +74,28 @@ export function useXUploadAdapter(localAdapter?: XUploadAdapter): XUploadAdapter
     scheduleMissingAdapterWarning();
   }
   return resolved;
+}
+
+/**
+ * 取图能力（拍照/相册）—— 全局可注入。
+ *
+ * 不注入时用库内置的 react-native-image-picker 实现；宿主注入后优先用宿主的。
+ */
+let globalPicker: XUploadPicker | null = null;
+
+/** 注入取图能力（App 启动时调用一次即可） */
+export function setXUploadPicker(picker: XUploadPicker) {
+  globalPicker = picker;
+}
+
+/** 取当前注入的取图能力（可能为空对象，调用方按方法兜底） */
+export function getXUploadPicker(): XUploadPicker {
+  return globalPicker ?? {};
+}
+
+/** 是否已注入取图能力 */
+export function isXUploadPickerInjected(): boolean {
+  return !!globalPicker;
 }
 
 /** 便捷构造：MinIO 预签名适配器（re-export） */

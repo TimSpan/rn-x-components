@@ -15,7 +15,7 @@
  */
 
 import React, {useCallback, useMemo} from 'react';
-import {Pressable, StyleSheet, View, ViewStyle, StyleProp, ScrollView, Text} from 'react-native';
+import {Pressable, StyleSheet, View, ViewStyle, StyleProp, ScrollView, Text, DimensionValue} from 'react-native';
 import {XPullView} from '../XPullView';
 import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
@@ -30,6 +30,17 @@ interface XModalFormProps {
   onSubmit?: () => boolean | void | Promise<boolean | void>;
   confirmText?: string;
   cancelText?: string;
+  /**
+   * 是否显示取消按钮，默认 true。
+   * 传 false 时只保留确定按钮（占满整行）—— 用于"通知弹窗"（antd Modal.alert 单按钮形态），
+   * 不渲染取消键，而不是渲染一个空文案的按钮。
+   */
+  showCancel?: boolean;
+  /**
+   * 卡片宽度，默认 '90%'（表单弹窗要够宽才好填）。
+   * 确认框/通知框这类短文案场景建议显式传 320，避免撑得太宽。
+   */
+  width?: DimensionValue;
   duration?: number;
   style?: StyleProp<ViewStyle>;
 }
@@ -42,6 +53,8 @@ export function XModalForm({
   onSubmit,
   confirmText,
   cancelText,
+  showCancel = true,
+  width = '90%',
   duration = 150,
   style,
 }: XModalFormProps) {
@@ -62,7 +75,6 @@ export function XModalForm({
       StyleSheet.create({
         /** 卡片本体：固定宽度 300、圆角、白底 */
         card: {
-          width: 300,
           backgroundColor: t.colorBgContainer,
           borderRadius: 12,
           overflow: 'hidden',
@@ -115,7 +127,7 @@ export function XModalForm({
   return (
     // side='center'：居中弹层；overlayOpacity=0.25：遮罩比底部弹窗浅（内容居中，暗度低一点更通透）
     <XPullView visible={visible} onClose={onClose} side='center' duration={duration} overlayOpacity={0.25}>
-      <View style={[styles.card, style]}>
+      <View style={[styles.card, {width}, style]}>
         {/* 标题区 */}
         {!!title && (
           <View style={styles.header}>
@@ -126,12 +138,17 @@ export function XModalForm({
         <ScrollView style={styles.body} keyboardShouldPersistTaps='handled'>
           {children}
         </ScrollView>
-        {/* 底部按钮区：取消 | 确定 */}
+        {/* 底部按钮区：取消 | 确定（showCancel=false 时只剩确定，占满整行且无分隔线） */}
         <View style={styles.footer}>
-          <Pressable onPress={onClose} style={({pressed}) => [styles.footerBtn, styles.cancelBtn, pressed && styles.pressed]}>
-            <Text style={[styles.cancelText, {color: t.colorTextSecondary}]}>{resolvedCancel}</Text>
-          </Pressable>
-          <Pressable onPress={handleSubmit} style={({pressed}) => [styles.footerBtn, styles.submitBtn, pressed && styles.pressed]}>
+          {showCancel && (
+            <Pressable onPress={onClose} style={({pressed}) => [styles.footerBtn, styles.cancelBtn, pressed && styles.pressed]}>
+              <Text style={[styles.cancelText, {color: t.colorTextSecondary}]}>{resolvedCancel}</Text>
+            </Pressable>
+          )}
+          <Pressable
+            onPress={handleSubmit}
+            style={({pressed}) => [styles.footerBtn, showCancel && styles.submitBtn, pressed && styles.pressed]}
+          >
             <Text style={[styles.submitText, {color: t.colorPrimary}]}>{resolvedConfirm}</Text>
           </Pressable>
         </View>

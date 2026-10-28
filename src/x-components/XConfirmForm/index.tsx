@@ -8,6 +8,7 @@
  * XConfirmForm 是"命令式"：不用管 visible，直接调
  *   const ok = await XConfirmForm.show({...})
  *   const ok = await confirm({...})        // 别名，等价
+ *   await notice({...})                    // 单按钮通知（无取消键）
  * 返回 Promise<boolean>：true=点了确定，false=取消/点遮罩。
  *
  * 【如何做到"不用挂载就能调"？】
@@ -29,7 +30,7 @@
  */
 
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, DimensionValue} from 'react-native';
 import {XModalForm} from '../XModalForm';
 import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
@@ -43,6 +44,13 @@ export interface XConfirmFormOptions {
   cancelText?: string;
   /** 危险操作：内容下方显示红色警示文案 */
   danger?: boolean;
+  /**
+   * 是否显示取消按钮，默认 true。
+   * false 时只有一个「确定」——notice() 用的就是这个形态。
+   */
+  showCancel?: boolean;
+  /** 卡片宽度，默认 320（确认/通知这类短文案不跟着表单弹窗放 90%） */
+  width?: DimensionValue;
 }
 
 /** 宿主实例暴露给 Service 的接口 */
@@ -113,6 +121,8 @@ export const XConfirmFormComponent = () => {
       title={options.title}
       confirmText={options.confirmText}
       cancelText={options.cancelText}
+      showCancel={options.showCancel ?? true}
+      width={options.width ?? 320}
       onSubmit={() => {
         // 点确定：兑现 true 并关闭
         hide(true);
@@ -159,3 +169,15 @@ export const XConfirmForm = Object.assign(XConfirmFormComponent, {
 
 /** 保留 duxui 的 confirm 命名风格：confirm({...}) 等价 XConfirmForm.show({...}) */
 export const confirm = XConfirmFormService.show;
+
+/**
+ * notice —— 单按钮通知框（对标 antd 的 Modal.alert('标题', '内容')，没有取消键）
+ *
+ * 用法：
+ *   await notice({title: '提示', content: '当前已是最新版本'});
+ *
+ * 返回 Promise<void>：点「确定」或点遮罩后兑现，调用方通常不用等。
+ * 需要判断用户意图时用 confirm()，需要单纯告知时用 notice()。
+ */
+export const notice = (options: Omit<XConfirmFormOptions, 'showCancel' | 'cancelText'>): Promise<void> =>
+  XConfirmFormService.show({...options, showCancel: false}).then(() => undefined);

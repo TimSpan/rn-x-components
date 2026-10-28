@@ -29,7 +29,7 @@
  * const values = await formRef.current.validate(); // 含 hiddenValues
  * ```
  */
-import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef} from 'react';
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useMemo} from 'react';
 import XForm from '../XForm';
 import {deepClone} from '../XForm/utils';
 import {renderXFormField} from './renderers';
@@ -61,8 +61,6 @@ function XFormProInner<ModelValue extends Record<string, any>>(
   const {t} = useXLocale();
 
   const [form] = XForm.useForm();
-  /** 用户输入产生的值变化（外部 value 同步不回声） */
-  const isInternalChange = useRef(false);
 
   // --- 构建表单元数据：补必填规则（老 FormPro 同款逻辑） ---
   const formMeta = useMemo(() => {
@@ -81,19 +79,27 @@ function XFormProInner<ModelValue extends Record<string, any>>(
   // --- 用户输入：上报父级（含 hiddenValues，因为它们在 store 里） ---
   const handleValuesChange = useCallback(
     (_changed: any, allValues: any) => {
-      isInternalChange.current = true;
       onUpdateValue?.(deepClone(allValues));
     },
     [onUpdateValue],
   );
 
-  // --- 外部 value 变化 -> 回显（编辑回填/重置场景） ---
+  /**
+   * 外部 value 变化 -> 回填。
+   *
+   * 不能用"上次变化是不是用户输入"这种布尔标记来跳过 —— 接口异步回来时
+   * 那个标记可能刚被用户输入置为 true，结果回填被整个吞掉（页面表现为"全是空值"）。
+   * 这里改成按值比对：只有和 store 不一致的字段才回填。
+   *   · 用户输入：父级 value 与 store 相同 -> 不动（不会打断输入法）
+   *   · 接口回填 / 编辑回显：值不同 -> 精确写入变化的字段
+   */
   useEffect(() => {
-    if (isInternalChange.current) {
-      isInternalChange.current = false;
-      return;
-    }
-    form.setFieldsValue(value as Record<string, any>);
+    if (!value) return;
+    const next = value as Record<string, any>;
+    const current = (form.getFieldsValue?.() ?? {}) as Record<string, any>;
+    const changedKeys = Object.keys(next).filter(key => !Object.is(current[key], next[key]));
+    if (!changedKeys.length) return;
+    form.setFieldsValue(Object.fromEntries(changedKeys.map(key => [key, next[key]])));
   }, [value, form]);
 
   // --- hiddenValues：进 store 不渲染（编辑场景的 id 等字段原样带回） ---
