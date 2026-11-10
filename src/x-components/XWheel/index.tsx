@@ -23,6 +23,7 @@ import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withSpring} from 'r
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import {useXTheme} from '../theme';
+import {tickWheelHaptic} from './feedback';
 
 /** 每行高度（antd: --item-height 34px） */
 const ITEM_HEIGHT = 34;
@@ -146,6 +147,8 @@ export const XWheel = React.memo(
     const startY = useSharedValue(0);
     /** 最后已上报的值：去重，切断"上报 -> 父更新 -> 再同步"循环 */
     const lastSynced = useSharedValue(value);
+    /** 上一次触发触感的格号（每一格只响一次） */
+    const lastTickIndex = useSharedValue(targetIndex);
 
     /** JS 侧选中上报（stable，供 worklet runOnJS 调用；antd 的 onSelect） */
     const select = useCallback(
@@ -164,6 +167,10 @@ export const XWheel = React.memo(
         const list = listRef.current;
         const i = Math.min(Math.max(index, 0), Math.max(list.length - 1, 0));
         y.value = withSpring(-i * ITEM_HEIGHT, SPRING_CONFIG);
+        if (i !== lastTickIndex.value) {
+          lastTickIndex.value = i;
+          tickWheelHaptic();
+        }
         select(list[i]?.value);
       },
       [y, select],
@@ -191,6 +198,12 @@ export const XWheel = React.memo(
             }
             const min = -((items.length - 1) * ITEM_HEIGHT);
             y.value = rubberbandIfOutOfBounds(startY.value + e.translationY, min, 0, ITEM_HEIGHT * RUBBERBAND_EXTENT_FACTOR);
+            // 每滚过一格给一次"哒"（和实体滚轮一样；同一格不重复响）
+            const idx = Math.round(-y.value / ITEM_HEIGHT);
+            if (idx !== lastTickIndex.value) {
+              lastTickIndex.value = idx;
+              runOnJS(tickWheelHaptic)();
+            }
           })
           .onEnd(e => {
             'worklet';
