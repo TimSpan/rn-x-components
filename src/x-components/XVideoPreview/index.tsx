@@ -7,6 +7,7 @@
  * XUploadVideo 内部直接复用。
  * ============================================================================
  */
+import AntDesign from '@react-native-vector-icons/ant-design';
 import React, {useCallback, useEffect} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useVideoPlayer, VideoView} from 'expo-video';
@@ -62,7 +63,7 @@ export function XVideoPreview({visible, onClose, uri}: XVideoPreviewProps) {
           nativeControls
         />
         <Pressable onPress={onClose} hitSlop={12} style={styles.close}>
-          <Text style={styles.closeText}>✕</Text>
+          <AntDesign name='close' size={18} color='#fff' />
         </Pressable>
       </View>
     </XPullView>

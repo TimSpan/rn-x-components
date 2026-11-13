@@ -12,12 +12,14 @@ X 打头的自研组件库，API 对标 antd（React），实现为纯 React Nat
 | XCheckbox | antd Checkbox | 可用（Checkbox / Checkbox.Group、indeterminate 半选） |
 | XProgress | antd Progress | 可用（line / circle / dashboard、渐变 strokeColor、success 分段） |
 | XTag | antd Tag | 可用（color 预设/自定义、variant light/solid/outline、closable、icon、onPress；兼容老 Tag 的 text/size/type） |
-| XInput | antd Input | 可用（value/onChangeText 原生透传、multiline=TextArea、disabled、allowClear、focus 高亮） |
+| XInput | antd Input | 可用（value/onChangeText 原生透传、**value 支持 number 自动转字符串**、multiline=TextArea、disabled、allowClear、suffix、focus 高亮） |
 | XCascadeSelect | antd Cascader | 可用（路径数组值、多列滚轮联动、XPullView 弹层） |
 | XMultiSelect | — | 可用（老 MultiSelect 重制：XPullView + XCheckbox + XButton） |
 | XFormPro | 老 FormPro | 可用（低代码表单：X 控件映射 + hiddenValues 编辑传参） |
 | XForm | antd Form | 可用（Form / Form.Item / useForm、规则校验、validateTrigger、dependencies、noStyle、函数式 children） |
 | XAnimatedSearchPanel | — | 可用（列表头可折叠搜索面板：单 progress 驱动高度/淡入/箭头旋转/文案交叉淡入） |
+| XCardStack | HyperOS 组件堆叠 | 可用（上下滑动翻卡、后卡露边 peek + 缩放、loop、haptic；单张自动禁用滑动） |
+| XWheel | antd/Wheel | 可用（单列滚轮；**每格「咔哒」音频 + Android CLOCK_TICK 极短触感**，可用 setXWheelSoundEnabled / setXWheelHapticsEnabled 关闭） |
 
 ## 快速上手
 

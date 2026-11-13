@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import AntDesign from '@react-native-vector-icons/ant-design';
 import {
   XButton,
   XActionSheet,
@@ -56,12 +57,31 @@ export function XPullViewDemo() {
 // ============================================================================
 export function XActionSheetDemo() {
   const [visible, setVisible] = useState(false);
+  const [iconVisible, setIconVisible] = useState(false);
   const [result, setResult] = useState('');
   return (
     <DemoPage>
       <Section title="底部菜单">
         <XButton type="primary" onPress={() => setVisible(true)}>弹出菜单</XButton>
         {result ? <Text style={styles.resultText}>选择了：{result}</Text> : null}
+      </Section>
+
+      <Section title="带图标选项（option.icon）">
+        <XButton onPress={() => setIconVisible(true)}>拍照 / 相册 菜单</XButton>
+        <Text style={styles.resultText}>图标用图标库节点（AntDesign），文字颜色仍跟主题</Text>
+        <XActionSheet
+          visible={iconVisible}
+          onClose={() => setIconVisible(false)}
+          title="选择图片来源"
+          options={[
+            {label: '拍照', value: 'camera', icon: <AntDesign name='camera' size={19} color='#2080F0' />},
+            {label: '从相册选择', value: 'album', icon: <AntDesign name='picture' size={19} color='#2080F0' />},
+          ]}
+          onSelect={option => {
+            setResult(String(option.label));
+            setIconVisible(false);
+          }}
+        />
       </Section>
       <XActionSheet
         visible={visible}

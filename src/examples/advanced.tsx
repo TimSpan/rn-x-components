@@ -2,6 +2,7 @@
  * 新组件演示页 —— 主题/i18n、轮播、选项卡、电梯楼层、下拉菜单、
  * 日历、录音、数字键盘、车牌输入、图表、签名、上传
  */
+import AntDesign from "@react-native-vector-icons/ant-design";
 import React, {useState} from 'react';
 import {Alert, Image, StyleSheet, Text, View} from 'react-native';
 import {
@@ -237,8 +238,12 @@ export function XRecordDemo() {
         {result && <Text style={styles.note}>已使用：时长 {result.duration}s</Text>}
       </Section>
       <Section title="权限配置提醒">
+        <View style={{flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6}}>
+          <AntDesign name="warning" size={14} color="#FA8C16" />
+          <Text style={{fontSize: 12, fontWeight: "600", color: "#FA8C16"}}>需要原生权限</Text>
+        </View>
         <Text style={styles.permissionTip}>
-          ⚠️ 首次点击录音按钮会在系统层弹权限框；如果没弹，
+           首次点击录音按钮会在系统层弹权限框；如果没弹，
           说明 AndroidManifest 没声明 RECORD_AUDIO、iOS Info.plist
           没写 NSMicrophoneUsageDescription。
           {"\n\n"}解决方法：

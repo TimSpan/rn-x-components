@@ -24,6 +24,7 @@
  * ============================================================================
  */
 
+import AntDesign from '@react-native-vector-icons/ant-design';
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
@@ -343,9 +344,7 @@ export function XDropdownMenu({round = true, onOpenChange, triggerHeight = 44, s
                         {option.name}
                       </Text>
                       {selected && (
-                        <Text style={{color: t.colorPrimary, fontSize: 14}} allowFontScaling={false}>
-                          ✓
-                        </Text>
+                        <AntDesign name='check' size={14} color={t.colorPrimary} />
                       )}
                     </Pressable>
                   );

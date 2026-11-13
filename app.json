@@ -42,6 +42,10 @@
     "experiments": {
       "typedRoutes": false,
       "reactCompiler": true
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content",
+      "translucent": true
     }
   }
 }

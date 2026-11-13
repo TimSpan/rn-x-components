@@ -1,3 +1,4 @@
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { ScrollView, StyleSheet, Text, View, Linking, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemeControls, useXTheme, type XTheme } from "@/x-components";
@@ -108,7 +109,18 @@ const makeStyles = (t: XTheme) =>
       borderRadius: 12,
       padding: 16,
     },
-    featureIcon: { fontSize: 28, marginBottom: 8 },
+    /** 图标容器（原来是 28 号 emoji 文字） */
+    featureIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 12,
+      backgroundColor: "#F4F9FF",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 8,
+    },
+    bulletRow: {flexDirection: "row", alignItems: "flex-start", gap: 8},
+    bulletIcon: {marginTop: 2},
     featureTitle: {
       fontSize: 14,
       fontWeight: "600",
@@ -209,14 +221,18 @@ export default function IntroScreen() {
         <Text style={styles.sectionTitle}>核心特性</Text>
         <View style={styles.featureRow}>
           <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>⚡</Text>
+            <View style={styles.featureIcon}>
+              <AntDesign name="thunderbolt" size={24} color="#2080F0" />
+            </View>
             <Text style={styles.featureTitle}>UI 线程动画</Text>
             <Text style={styles.featureDesc}>
               Reanimated worklet 驱动，不依赖 JS 线程，动画不掉帧
             </Text>
           </View>
           <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>🎯</Text>
+            <View style={styles.featureIcon}>
+              <AntDesign name="aim" size={24} color="#2080F0" />
+            </View>
             <Text style={styles.featureTitle}>API 对标 antd</Text>
             <Text style={styles.featureDesc}>
               如果你熟悉 Ant Design，可以零学习成本上手
@@ -225,14 +241,18 @@ export default function IntroScreen() {
         </View>
         <View style={styles.featureRow}>
           <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>📦</Text>
+            <View style={styles.featureIcon}>
+              <AntDesign name="inbox" size={24} color="#2080F0" />
+            </View>
             <Text style={styles.featureTitle}>零重型依赖</Text>
             <Text style={styles.featureDesc}>
               不依赖 antd-mobile / ant-design-react-native，纯净轻量
             </Text>
           </View>
           <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>🎨</Text>
+            <View style={styles.featureIcon}>
+              <AntDesign name="bg-colors" size={24} color="#2080F0" />
+            </View>
             <Text style={styles.featureTitle}>统一设计 Token</Text>
             <Text style={styles.featureDesc}>
               颜色 / 圆角 / 字号集中管理，换肤只改一个文件
@@ -299,27 +319,32 @@ export default function IntroScreen() {
           （多列日期）共用。
         </Text>
         <View style={styles.bulletList}>
-          <Text style={styles.bullet}>
-            🎯 没有 ScrollView —— 一个手势 + 一个平移值：Gesture.Pan
+          <View style={styles.bulletRow}>
+            <AntDesign name="aim" size={14} color="#2080F0" style={styles.bulletIcon} />
+            <Text style={styles.bullet}>没有 ScrollView —— 一个手势 + 一个平移值：Gesture.Pan
             驱动单个 y 共享值，整列只是整体 translateY，滚动中每帧只有 1
-            个 transform 更新，零逐行计算、零 JS 参与
-          </Text>
-          <Text style={styles.bullet}>
-            🧤 橡皮筋越界 —— 拖出边界时按 antd 原公式 rubberband
-            阻尼回拉，松手自动回弹
-          </Text>
-          <Text style={styles.bullet}>
-            🚀 动量投影落位 —— 松手按「位置 + 速度投影」夹取到目标行，
-            withSpring 过阻尼弹簧落位，干脆利落不飘
-          </Text>
-          <Text style={styles.bullet}>
-            ⚡ 选中即时上报 —— 不等动画结束立刻回调选中值，与 antd
-            行为一致
-          </Text>
-          <Text style={styles.bullet}>
-            🎭 遮罩即高亮 —— 所有行视觉完全一致，选中表现来自上下渐变遮罩
-            + 中间框线，渲染成本恒定
-          </Text>
+            个 transform 更新，零逐行计算、零 JS 参与</Text>
+          </View>
+          <View style={styles.bulletRow}>
+            <AntDesign name="drag" size={14} color="#2080F0" style={styles.bulletIcon} />
+            <Text style={styles.bullet}>橡皮筋越界 —— 拖出边界时按 antd 原公式 rubberband
+            阻尼回拉，松手自动回弹</Text>
+          </View>
+          <View style={styles.bulletRow}>
+            <AntDesign name="rocket" size={14} color="#2080F0" style={styles.bulletIcon} />
+            <Text style={styles.bullet}>动量投影落位 —— 松手按「位置 + 速度投影」夹取到目标行，
+            withSpring 过阻尼弹簧落位，干脆利落不飘</Text>
+          </View>
+          <View style={styles.bulletRow}>
+            <AntDesign name="thunderbolt" size={14} color="#2080F0" style={styles.bulletIcon} />
+            <Text style={styles.bullet}>选中即时上报 —— 不等动画结束立刻回调选中值，与 antd
+            行为一致</Text>
+          </View>
+          <View style={styles.bulletRow}>
+            <AntDesign name="picture" size={14} color="#2080F0" style={styles.bulletIcon} />
+            <Text style={styles.bullet}>遮罩即高亮 —— 所有行视觉完全一致，选中表现来自上下渐变遮罩
+            + 中间框线，渲染成本恒定</Text>
+          </View>
         </View>
       </View>
 
@@ -340,7 +365,7 @@ export default function IntroScreen() {
 
       {/* npm 已发布 */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>已发布到 npm 🎉</Text>
+        <Text style={styles.cardTitle}>已发布到 npm</Text>
         <Text style={styles.paragraph}>
           包名：
           <Text style={styles.code}> react-native-x-components</Text>
@@ -358,9 +383,11 @@ export default function IntroScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          X-Components · Made with ❤️ by KevinMao
-        </Text>
+        <View style={{flexDirection: "row", alignItems: "center", gap: 5}}>
+          <Text style={styles.footerText}>X-Components · Made with</Text>
+          <AntDesign name="heart" size={12} color="#FF4D4F" />
+          <Text style={styles.footerText}>by KevinMao</Text>
+        </View>
       </View>
     </ScrollView>
   );

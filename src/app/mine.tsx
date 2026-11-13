@@ -1,3 +1,4 @@
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { ScrollView, StyleSheet, Text, View, Linking, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeControls, useXTheme } from '@/x-components';
@@ -79,9 +80,11 @@ export default function AboutScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={[styles.footerText, {color: t.colorTextQuaternary}]}>
-          Made with ❤️ by maoyuxiang
-        </Text>
+        <View style={{flexDirection: "row", alignItems: "center", gap: 5}}>
+          <Text style={[styles.footerText, {color: t.colorTextQuaternary}]}>Made with</Text>
+          <AntDesign name="heart" size={12} color="#FF4D4F" />
+          <Text style={[styles.footerText, {color: t.colorTextQuaternary}]}>by maoyuxiang</Text>
+        </View>
       </View>
     </ScrollView>
   );

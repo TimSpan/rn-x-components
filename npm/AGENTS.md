@@ -11,7 +11,8 @@ npm install react-native-x-components dayjs zustand
 npx expo install react-native-reanimated react-native-safe-area-context react-native-svg react-native-gesture-handler
 # 可选 peer（用到哪个装哪个）：
 #   @shopify/react-native-skia   → XSignatureSkia
-#   expo-audio                   → XRecord
+#   expo-audio                   → XRecord、XWheel 的「咔哒」音效
+#   expo-haptics                 → XWheel / XCardStack 的每格触感（Android 走 CLOCK_TICK）
 #   expo-image-picker + expo-image-manipulator + expo-file-system → XUpload*
 #   expo-video                   → XVideoPreview
 #   react-native-zoom-toolkit    → XImagePreview 缩放

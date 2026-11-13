@@ -192,9 +192,8 @@ export function XUploadImage({
           </Pressable>
           {!disabled && (
             <Pressable style={styles.remove} onPress={() => handleRemove(index)} hitSlop={6}>
-              <Text style={styles.removeText} allowFontScaling={false}>
-                ✕
-              </Text>
+              {/* 删除角标：线性 close 图标，比 ✕ 字符干净（字符在不同字体下粗细不一） */}
+              <AntDesign name='close' size={11} color='#fff' />
             </Pressable>
           )}
         </View>

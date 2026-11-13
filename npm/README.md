@@ -107,10 +107,10 @@ export default function App() {
 | 表单 | XForm XFormPro XCascadeSelect XMultiSelect XModalForm |
 | 弹层 | XPullView XActionSheet XPicker XPickerDate XConfirmForm XTopView XAnimatedView |
 | 全局 | XToast XLoadingModal XImagePreview |
-| 交互 | XCarousel XTabs XDropdownMenu XElevator XNumberKeyboard XLicensePlate |
+| 交互 | XCarousel XTabs XDropdownMenu XElevator XNumberKeyboard XLicensePlate **XCardStack XWheel** |
 | 媒体 | XRecord XCalendar XCalendarPopup XSignature XSignatureSkia XUploadImage XUploadVideo |
 | 数据 | XChart(XLineChart/XBarChart/XPieChart) |
-| 基建 | useXTheme setXThemeMode useXLocale setXLocale XUploadProvider |
+| 基建 | useXTheme setXThemeMode useXLocale setXLocale XUploadProvider \| setXWheelHapticsEnabled / setXWheelSoundEnabled（滚轮回馈开关） |
 
 ## 上传适配器（MinIO 预签名直传）
 

@@ -14,6 +14,7 @@
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import AntDesign from '@react-native-vector-icons/ant-design';
 import {useXTheme, useXThemeMode, setXThemeMode, XThemeMode} from '../theme';
 import {useXBrandStore, setXBrandByName, X_BRAND_PRESETS} from './BrandColor';
 import {showXActionSheet} from '../XActionSheet/global';
@@ -25,9 +26,17 @@ export interface ThemeControlsProps {
 }
 
 /**
- * 暗黑切换：三态循环 📱跟随系统 → 🌙暗 → ☀️亮 → 📱。
+ * 暗黑切换：三态循环 跟随系统(sync) → 暗(moon) → 亮(sun) → 跟随系统。
  * 用户点过两态按钮会永久脱离系统跟随（bug 根因），三态保证能回到"自动"。
+ *
+ * 图标用 AntDesign 的线性图标，不再用 📱/🌙/☀️ 这类 emoji ——
+ * emoji 在不同 ROM 上字形差异很大（小米的📱尤其丑），而且是彩色贴图，跟主题色不联动。
  */
+const MODE_ICON: Record<XThemeMode, string> = {
+  system: 'sync',
+  dark: 'moon',
+  light: 'sun',
+};
 function ThemeModeButton({compact}: {compact?: boolean}) {
   const t = useXTheme();
   const mode = useXThemeMode();
@@ -41,9 +50,7 @@ function ThemeModeButton({compact}: {compact?: boolean}) {
         {borderColor: t.colorBorder, backgroundColor: pressed ? t.colorBgLayout : 'transparent'},
       ]}
     >
-      <Text style={[compact ? styles.icon : styles.iconBig, {color: t.colorText}]}>
-        {mode === 'system' ? '📱' : mode === 'dark' ? '🌙' : '☀️'}
-      </Text>
+      <AntDesign name={MODE_ICON[mode] as never} size={compact ? 16 : 18} color={t.colorText} />
     </Pressable>
   );
 }

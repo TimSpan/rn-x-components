@@ -92,6 +92,8 @@ export function XDividerDemo() {
 export function XInputDemo() {
   const [val, setVal] = useState('');
   const [amount, setAmount] = useState('');
+  /** number 值：接口回填常见场景，内部会自动转字符串再交给原生 TextInput */
+  const [numberValue, setNumberValue] = useState<number | null>(600);
   return (
     <DemoPage>
       <Section title="基本输入">
@@ -103,6 +105,21 @@ export function XInputDemo() {
         />
         <Text style={styles.resultText}>当前值：{val}</Text>
       </Section>
+      <Section title="number 值（表单回填）">
+        <XInput
+          placeholder="请输入数字"
+          keyboardType="numeric"
+          value={numberValue}
+          onChangeText={text => setNumberValue(text === '' ? null : Number(text))}
+        />
+        <Text style={styles.resultText}>
+          当前值：{numberValue === null ? '（空）' : `${numberValue}（${typeof numberValue}）`}
+        </Text>
+        <Text style={styles.resultText}>
+          value 直接传 number 也能正常显示，不会因为类型不符变成空白
+        </Text>
+      </Section>
+
       <Section title="禁用 / 多行">
         <XInput placeholder="禁用状态" disabled />
         <View style={{height: 12}} />
