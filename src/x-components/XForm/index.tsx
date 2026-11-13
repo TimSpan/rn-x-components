@@ -351,9 +351,12 @@ const styles = StyleSheet.create({
   item: {
     marginBottom: 18,
   },
+  /** 水平布局：label 与右侧控件垂直居中。
+   *  原来是 flex-start，label 贴在顶部，和 44/48 高的输入框、选择器对不齐
+   *  （搜索面板里表现最明显：label 比控件文字高一截）。 */
   itemHorizontal: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   labelRow: {
     flexDirection: 'row',

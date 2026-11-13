@@ -13,6 +13,7 @@
  */
 
 import React, {useCallback, useRef, useState} from 'react';
+import AntDesign from '@react-native-vector-icons/ant-design';
 import {Alert, Image, LayoutChangeEvent, Pressable, StyleSheet, Text, View, StyleProp, ViewStyle} from 'react-native';
 import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
@@ -98,9 +99,8 @@ export function XUploadImage({
     const source = await showXActionSheet({
       title: '选择图片来源',
       options: [
-        {label: '📷  拍照', value: 'camera'},
-        {label: '🖼️  从相册选择', value: 'album'},
-        {label: '取消', value: null},
+        {label: '拍照', value: 'camera', icon: <AntDesign name='camera' size={19} color='#2080F0' />},
+        {label: '从相册选择', value: 'album', icon: <AntDesign name='picture' size={19} color='#2080F0' />},
       ],
     });
     // 宿主注入的取图能力优先；没注入就用库内置的 react-native-image-picker 实现

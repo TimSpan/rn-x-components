@@ -8,6 +8,7 @@
  */
 
 import React, {useCallback, useState} from 'react';
+import AntDesign from '@react-native-vector-icons/ant-design';
 import {Pressable, StyleSheet, Text, View, StyleProp, ViewStyle} from 'react-native';
 import {useXTheme} from '../theme';
 import {useXLocale} from '../XLocale';
@@ -64,9 +65,8 @@ export function XUploadVideo({
     const source = await showXActionSheet({
       title: '选择视频来源',
       options: [
-        {label: '🎥  拍视频', value: 'camera'},
-        {label: '🎞️  从相册选择', value: 'album'},
-        {label: '取消', value: null},
+        {label: '拍视频', value: 'camera', icon: <AntDesign name='video-camera' size={19} color='#2080F0' />},
+        {label: '从相册选择', value: 'album', icon: <AntDesign name='folder-open' size={19} color='#2080F0' />},
       ],
     });
     // 宿主注入的取图能力优先
@@ -108,7 +108,7 @@ export function XUploadVideo({
           style={[styles.resultBox, {borderColor: t.colorSplit, backgroundColor: t.colorBgLayout, borderRadius: t.borderRadius}]}
         >
           <Text numberOfLines={1} style={[styles.resultText, {color: t.colorText}]}>
-            🎬 {String((current as {url?: string}).url ?? (current as {objectKey?: string}).objectKey ?? '视频')}
+            {String((current as {url?: string}).url ?? (current as {objectKey?: string}).objectKey ?? '视频')}
           </Text>
           {!disabled && (
             <Pressable

@@ -30,6 +30,8 @@ import {useXLocale} from '../XLocale';
 export interface XActionSheetOption<T = any> {
   /** 显示内容：文本或自定义节点（如 带色圆点+文字 的行） */
   label: string | React.ReactNode;
+  /** 选项左侧图标（图标库节点，如 <AntDesign name="camera" />）；文字颜色自动跟随主题 */
+  icon?: React.ReactNode;
   /** 回传的值 */
   value: T;
   /** 危险操作：文字变红 */
@@ -101,6 +103,11 @@ export function XActionSheet<T = any>({
         pressed: {
           backgroundColor: t.colorBgLayout,
         },
+        optionInner: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        },
         optionText: {
           fontSize: 16,
           color: t.colorText,
@@ -161,7 +168,10 @@ export function XActionSheet<T = any>({
               style={({pressed}) => [styles.option, pressed && !option.disabled && styles.pressed]}
             >
               {typeof option.label === 'string' ? (
-                <Text style={[styles.optionText, option.danger && styles.dangerText, option.disabled && styles.disabledText]}>{option.label}</Text>
+                <View style={styles.optionInner}>
+                  {option.icon}
+                  <Text style={[styles.optionText, option.danger && styles.dangerText, option.disabled && styles.disabledText]}>{option.label}</Text>
+                </View>
               ) : (
                 option.label
               )}

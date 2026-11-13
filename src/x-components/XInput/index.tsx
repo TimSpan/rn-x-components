@@ -34,8 +34,9 @@ import {useXLocale} from '../XLocale';
 import {XPullView} from '../XPullView';
 import {XNumberKeyboard} from '../XNumberKeyboard';
 
-export interface XInputProps extends TextInputProps {
-  value?: string;
+export interface XInputProps extends Omit<TextInputProps, 'value'> {
+  /** 允许 string / number；number 会在内部转成 string 再交给原生 TextInput */
+  value?: string | number | null;
   onChangeText?: (text: string) => void;
   multiline?: boolean;
   /** 禁用：不可编辑 + 禁用底色（antd disabled） */
@@ -93,13 +94,21 @@ export const XInput = forwardRef<TextInput, XInputProps>(function XInput(
    * 外部改值（回填/重置）通过 reportedRef 区分：value 不等于我们最近上报的
    * 文本，说明是外部注入，才采纳进镜像。
    */
-  const [mirror, setMirror] = useState(value);
-  const reportedRef = useRef(value);
+  /**
+   * RN TextInput 的 value 只接受 string。业务里表单值经常是 number
+   * （项目设置的打卡半径 600、阈值 80 等），直接把 number 传进去原生层会
+   * 丢弃 → 表现为「接口有值但输入框全空」。这里统一规范化成字符串，
+   * 同时保持受控镜像的 IME 防回抛机制不变。
+   */
+  const normalize = (v: unknown): string | undefined => (v === undefined ? undefined : v === null ? '' : String(v));
+  const [mirror, setMirror] = useState(normalize(value));
+  const reportedRef = useRef(normalize(value));
 
   useEffect(() => {
-    if (value !== reportedRef.current) {
-      reportedRef.current = value;
-      setMirror(value);
+    const next = normalize(value);
+    if (next !== reportedRef.current) {
+      reportedRef.current = next;
+      setMirror(next);
     }
   }, [value]);
 

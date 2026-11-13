@@ -116,6 +116,7 @@ export * from './XActionSheet';
 export * from './XCardStack';
 export * from './XWheel';
 export {setXWheelHapticsEnabled, isXWheelHapticsEnabled, tickWheelHaptic} from './XWheel/feedback';
+export {setXWheelSoundEnabled, isXWheelSoundEnabled, playWheelTick} from './XWheel/sound';
 export * from './XPicker';
 export * from './XPickerDate';
 export * from './XModalForm';
